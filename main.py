@@ -207,9 +207,9 @@ def main_ubcf():
                                      zip_code_weight=input['zip_code_weight'])
 
     # Compute pairwise users similarity
-    users_similarity = user_similarity.pairwise_similarity(users)
-    save_pairwise_similarity(users_similarity, path='models/users_similarity.csv')
-    # users_similarity = load_pairwise_similarity('models/users_similarity.csv')
+    # users_similarity = user_similarity.pairwise_similarity(users)
+    # save_pairwise_similarity(users_similarity, path='models/users_similarity.csv')
+    users_similarity = load_pairwise_similarity('models/users_similarity.csv')
 
     # UBCF Cross Validation
     rmse = CF.cross_validate('data/shuffled.training.dat',

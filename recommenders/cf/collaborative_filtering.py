@@ -112,6 +112,17 @@ class CF:
                 (user_id, movie_id, rating) = (row[0], row[1], float(row[2]))
                 dataset.append((user_id, movie_id, rating))
 
+        ''' ***
+        # This code generates one similarity model for all folds
+        # It is faster but not the best choice,
+        # as it uses ratings from the testset in computing similarity
+        if not load_models:
+            cf = CF(k, similarity)
+            cf.set_dataset(dataset)
+            cf.train(item_based=item_based)
+            cf.save_model(models_directory + '/{}_model_f{}_sim{}.csv'.format(model_name, 'All', similarity.__name__))
+        '''
+
         # Use shuffle=True to shuffle the folds selection
         # folds = KFold(n=len(dataset), n_folds=n_folds, shuffle=True)
         folds = KFold(n=len(dataset), n_folds=n_folds, shuffle=False)
@@ -124,11 +135,15 @@ class CF:
 
             cf = CF(k, similarity)
             cf.set_dataset(training_set)
+            # '''***
             if load_models:
                 cf.load_model(models_directory + '/{}_model_f{}_sim{}.csv'.format(model_name, fold, similarity.__name__))
             else:
                 cf.train(item_based=item_based)
                 cf.save_model(models_directory + '/{}_model_f{}_sim{}.csv'.format(model_name, fold, similarity.__name__))
+            # '''
+            '''***'''
+            # cf.load_model(models_directory + '/{}_model_f{}_sim{}.csv'.format(model_name, 'All', similarity.__name__))
 
             # Inject the external similarities if they were provided
             if external_similarities is not None:
