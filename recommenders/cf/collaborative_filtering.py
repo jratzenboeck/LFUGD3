@@ -364,8 +364,8 @@ class CF:
         # For each user in pairwise_similarity, sort its similar users
         # according to the similarity scores
         pairwise_similarity_sorted = {}
-        for item in self.__pairwise_similarity:
-            pairwise_similarity_sorted[item] = sorted(self.__pairwise_similarity[item].items(),
+        for user in self.__pairwise_similarity:
+            pairwise_similarity_sorted[user] = sorted(self.__pairwise_similarity[user].items(),
                                                       key=lambda rec: rec[1],
                                                       reverse=True)
 
