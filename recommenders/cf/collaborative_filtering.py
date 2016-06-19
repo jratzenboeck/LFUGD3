@@ -132,7 +132,7 @@ class CF:
 
             # Inject the external similarities if they were provided
             if external_similarities is not None:
-                cf.modify_items_similarity(external_similarities, alpha=alpha)
+                cf.modify_pairwise_similarity(external_similarities, alpha=alpha)
 
             cf.predict_missing_ratings(item_based=item_based)
             predict_set = cf.predict_for_set(test_set)

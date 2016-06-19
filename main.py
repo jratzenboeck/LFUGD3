@@ -106,6 +106,7 @@ def build_movies_similarity_models(movies,
 
     return text_similarity, movie_similarity
 
+
 def main_ibcf():
     # Input Parameters
     input = {}
@@ -171,7 +172,7 @@ def main_ibcf():
     cf.train(item_based=True)
     cf.save_model('models/items_model_sim{}.csv'.format(cf.similarity.__name__))
     # Inject the external similarities
-    cf.modify_items_similarity(movies_similarity, alpha=input['alpha'])
+    cf.modify_pairwise_similarity(movies_similarity, alpha=input['alpha'])
     cf.predict_missing_ratings(item_based=True)
     predictions = cf.predict_for_set_with_path('data/predict.dat')
     print(predictions)
@@ -194,7 +195,7 @@ def main_ubcf():
     # IMPORTANT PARAMETERS
     input['k'] = 80
     # Alpha is for the external similarity, 1.0: only content-based, 0.0: only user-based
-    input['alpha'] = 1.0
+    input['alpha'] = 0.0
 
     # Load users
     users = load_users('data/users.dat')
@@ -217,7 +218,7 @@ def main_ubcf():
                              similarity=similarity_pearson,
                              n_folds=10,
                              models_directory='models',
-                             load_models=True,
+                             load_models=False,
                              external_similarities=users_similarity,
                              alpha=input['alpha'])
 
@@ -237,7 +238,7 @@ def main_ubcf():
     cf.train(item_based=False)
     cf.save_model('models/items_model_sim{}.csv'.format(cf.similarity.__name__))
     # Inject the external similarities
-    cf.modify_items_similarity(movies_similarity, alpha=input['alpha'])
+    cf.modify_pairwise_similarity(movies_similarity, alpha=input['alpha'])
     cf.predict_missing_ratings(item_based=False)
     predictions = cf.predict_for_set_with_path('data/predict.dat')
     print(predictions)
