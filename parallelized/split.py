@@ -2,6 +2,7 @@ import csv
 from random import shuffle
 from sklearn.cross_validation import train_test_split
 
+
 def read_trainingset(path):
     dataset = []
     with open(path, newline='') as file:
@@ -11,10 +12,12 @@ def read_trainingset(path):
             dataset.append((user_id, movie_id, rating))
     return dataset
 
+
 def get_shuffled_trainingset(path):
     dataset = read_trainingset(path)
     shuffle(dataset)
     return dataset
+
 
 def get_splitted_datasets(path):
     dataset = read_trainingset(path)
@@ -24,12 +27,14 @@ def get_splitted_datasets(path):
     rec_train, rec_test = train_test_split(dataset, test_size=0.3, random_state=42)
     return (rec_train, rec_test)
 
+
 def write_dataset(path, dataset):
     with open(path, 'w', newline='') as file:
         writer = csv.writer(file, delimiter='\t', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         for instance in dataset:
             writer.writerow(instance)
     return dataset
+
 
 pathToTrainingSet = '../data/training.dat'
 number_of_splits = 4
