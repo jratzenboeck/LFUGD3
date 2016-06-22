@@ -134,7 +134,7 @@ class CF:
             training_set = [dataset[i] for i in train_indices]
             test_set = [dataset[i] for i in test_indices]
 
-            print("Fold (%) started (%)" % (fold, time.strftime('%y_%m_%d_%H_%M_%S')))
+            print("Fold (%d) started (%s)" % (fold, time.strftime('%y_%m_%d_%H_%M_%S')))
             cf = CF(k, similarity)
             cf.set_dataset(training_set)
             # '''***
@@ -155,7 +155,7 @@ class CF:
             predict_set = cf.predict_for_set(test_set)
 
             rmse += mean_squared_error([rec[2] for rec in test_set], [rec[2] for rec in predict_set]) ** 0.5
-            print("Fold (%) finished with accumulated RMSE of (%) (%)" % (fold, rmse, time.strftime('%y_%m_%d_%H_%M_%S')))
+            print("Fold (%d) finished with accumulated RMSE of (%f) (%s)" % (fold, rmse, time.strftime('%y_%m_%d_%H_%M_%S')))
 
         return rmse / float(n_folds)
 
@@ -259,7 +259,7 @@ class CF:
             # Status updates for large datasets
             c += 1
             if c % 100 == 0:
-                print("Pairwise_Similarity: %d / %d (%)" % (c, len(dataset_centered), time.strftime('%y_%m_%d_%H_%M_%S')))
+                print("Pairwise_Similarity: %d / %d (%s)" % (c, len(dataset_centered), time.strftime('%y_%m_%d_%H_%M_%S')))
 
             self.__pairwise_similarity.setdefault(key_i, {})
             # Calculate how similar this object to other objects
@@ -320,12 +320,12 @@ class CF:
         # For each item in pairwise_similarity, sort its similar items
         # according to the similarity scores
         pairwise_similarity_sorted = {}
-        print("Sorting started (%)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
+        print("Sorting started (%s)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
         for item in self.__pairwise_similarity:
             pairwise_similarity_sorted[item] = sorted(self.__pairwise_similarity[item].items(),
                                                       key=lambda rec: rec[1],
                                                       reverse=True)
-        print("Sorting finished (%)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
+        print("Sorting finished (%s)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
 
         # Loop over all users
         c = 0
@@ -333,7 +333,7 @@ class CF:
             # Status updates for large datasets
             c += 1
             if c % 100 == 0:
-                print("Missing_Ratings: %d / %d (%)" % (c, len(self.__dataset), time.strftime('%y_%m_%d_%H_%M_%S')))
+                print("Missing_Ratings: %d / %d (%s)" % (c, len(self.__dataset), time.strftime('%y_%m_%d_%H_%M_%S')))
 
             # Loop over all items
             for item in pairwise_similarity_sorted:
@@ -369,12 +369,12 @@ class CF:
         # For each user in pairwise_similarity, sort its similar users
         # according to the similarity scores
         pairwise_similarity_sorted = {}
-        print("Sorting started (%)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
+        print("Sorting started (%s)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
         for user in self.__pairwise_similarity:
             pairwise_similarity_sorted[user] = sorted(self.__pairwise_similarity[user].items(),
                                                       key=lambda rec: rec[1],
                                                       reverse=True)
-        print("Sorting finished (%)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
+        print("Sorting finished (%s)" % (time.strftime('%y_%m_%d_%H_%M_%S')))
 
         # Invert the dataset to be item-centric
         dataset_item_centric = CF.__transpose_dataset(self.__dataset)
@@ -385,7 +385,7 @@ class CF:
             # Status updates for large datasets
             c += 1
             if c % 100 == 0:
-                print("Missing_Ratings: %d / %d (%)" % (c, len(dataset_item_centric), time.strftime('%y_%m_%d_%H_%M_%S')))
+                print("Missing_Ratings: %d / %d (%s)" % (c, len(dataset_item_centric), time.strftime('%y_%m_%d_%H_%M_%S')))
 
             # Loop over all users
             for user in pairwise_similarity_sorted:

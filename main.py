@@ -195,7 +195,7 @@ def main_ubcf():
     # IMPORTANT PARAMETERS
     input['k'] = 80
     # Alpha is for the external similarity, 1.0: only content-based, 0.0: only user-based
-    input['alpha'] = 0.0
+    input['alpha'] = 1.0
 
     # Load users
     users = load_users('data/users.dat')
