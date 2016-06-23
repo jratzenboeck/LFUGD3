@@ -2,7 +2,7 @@
 \begin{document}
 
 % ------ Enter task number (1-3) here
-\def\taskno{2}
+\def\taskno{3}
 
 % ------ Enter your group letter here
 \def\groupno{D}
@@ -46,117 +46,107 @@
 
 \section{Description of Task \taskno}
 
-In this task, we should predict a set of movie ratings by adding the ratings to 200.000 (user, movie) tuples. To fulfill the task, three different datasets are provided. The first one contains 800.000 (user, movie, rating) triples which represent previous movie ratings. This file should be used in an item-based collaborative filtering approach to find the similarity between movies based on these ratings. The second file contains more information about the movies namely, title, release year and genres. This information should be used to crawl online information sources to collect more information about these movies. Then, the collected information is used to enhance the similarity results between movies, which in turns enhances the prediction accuracy. The third file contains a set of (user, movie) tuples which should finally be enriched by the predicted rating of that user for that movie.
+In this task, we should predict a set of movie ratings for 200.000 (user, movie) tuples. To fulfill the task, three different datasets are provided. The first one contains 800.000 (user, movie, rating) triples which represent previous movie ratings. The second contains more details about the movies namely, title, release year and genres. The third contains some information about the users who rated the movies namely, gender, age range, job and zip-code. Information provided by these three files combined with extended information crawled from multiple on-line movie sources should be used in experimenting and evaluating different hybrid recommendation systems. The fourth file contains a set of (user, movie) tuples which should finally be enriched by predicted user ratings for the movies using the best evaluated recommendation system.
 
-The remainder of this paper is organized as follows. In section 2 we provide an overview and a short analysis on the provided datasets. Section 3 explains how we addressed this task and which algorithms and resources we used to compute the missing movie ratings. This section also proposes our approach to improve the results of IBCF by incorporating the information collected from external sources. Section 4 how we tested our approach using different configurations and the setups conducted for these configurations. Section 5 shows our results for different settings, and the last section wraps up the task by concluding it.
+The remainder of this paper is organized as follows. In section 2 we provide an overview and a short analysis on the provided datasets. Section 3 explains how we addressed this task. It also proposes our parallelized and monolithic approaches to predict the missing ratings. Section 4 presents how we tested our approaches using different configurations and also the setups conducted for these configurations. Section 5 shows the results for different setups, and the last section wraps up the task by concluding it.
 
 \section{Data Analysis}
 
-The data analysis for task 2 is based on the information that was gathered in the data analysis for task 1. The results of the data analysis for task 1 involved the analysis of the training dataset, and the predict dataset. The analysis of the training dataset showed that the dataset contains 800167 (user, movie, rating) triples with the highest density at a rating of four. The analysis of the predict dataset showed that it contains 200042 (user, movie) tuples with 25 of them not part of the training dataset.
- 
-The new movies dataset contains 3883 (id, title, genres) triples that fit to the given data from task 1. It is used to gather additional information about the movies, three different data sources were used. Figure (\ref{fig:sources}) shows that using OMDB, we were able to gather information for 3676 movies (94\%) from the dataset, where using TMDB, 3575 movies (92\%) were enriched and finally using DBpedia, 3214 movies (82\%) were enriched by external information.
+Data analysis was performed mainly in tasks 1 and 2. The first file of this task contains 800167 (user\_id, movie\_id, rating) tuples used for training with the highest rating density at a four. The third file of this task contains 200042 (user\_id, movie\_id) tuples used for predicting the final ratings with 25 new movie\_ids which don't exist in the training set.
+
+The second file contains 3883 (id, title, genres) triples which fit the given rated (to be rated) movies for this task. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). Figure (\ref{fig:sources}) shows the percentage of movies that we were able to enrich from each of these sources with (94\%, 92\%, 82\%) from (OMDB, TMDB, DBPedia) respectively.
+
+OMDB was used as the main information source, where TMDB and DBPedia were used to enrich this source either by filling in the missing values or by extending the basic information. This process led to 95 features for each movie, which were analyzed and processed to end up with 17 important features that have relatively high densities.
+
+The third file contains 6040 (id, gender, age, job, zip-code) quintuples which also fit the users who has (should have) ratings in the datasets of this task. The user information provided was complete and sound (no missing or unknown values). Figure (???) shows histograms for this set. The users tend to be males (71\%) and in the age range of [25, 34] (34\%).
 
 \begin{figure}
 \centering
-\includegraphics[width=\columnwidth]{images/sources.png}
+% \includegraphics[width=\columnwidth]{images/sources.png}
 \caption{Percentage of returned movie information}
 \label{fig:sources}
 \end{figure}
 
-Based on this observation and the high density of the features, OMDB was used as the basic information source. Whereas, the other two sources were used to fill any missing information from OMDB, extend this information using other meaningful missing features and merge any available textual data to enrich it the description of the movies.
-
-This process leads to one single dataset with 95 Features, containing the modified features form the OMDB enriched by the features from the two other sources. After removing all the features that had an extremely low density, were empty, or were highly correlated we end up with 19 features. Figure (\ref{fig:density}) shows the density for these 17 features which was used in combination with other subjective criteria to choose the final features that would be considered in our approach to predict the ratings.
-
 \begin{figure}
 \centering
-\includegraphics[width=\columnwidth]{images/density.png}
-\caption{Density of Features}
-\label{fig:density}
-\end{figure}
-
-\begin{figure}
-\centering
-\includegraphics[width=\columnwidth]{images/missing_values.png}
-\caption{Percentage of missing values}
+% \includegraphics[width=\columnwidth]{images/density.png}
+\caption{Histograms for users set}
 \label{fig:density}
 \end{figure}
 
 \section{Proposed Method}
 
-For this task, we implemented a Python program that crawls three different web sources (OMDb, TMDb, Dbpedia). The program uses the crawled data along with an implemented item-based collaborative filtering algorithm to compute the missing predictions. Figure (\ref{fig:approach}) illustrates the proposed approach.
+For this task, we worked on two sets of approaches: early-fusion (parallelized design) and late-fusion (monolithic design). For the early-fusion approach, we boosted item-based collaborative filtering using content-based movies similarity, and user-based collaborative filtering using content-based users similarity. [???] Finally, we boosted matrix factorization approach using ??????????.
+For the late fusion approach, we combined the results of multiple recommendation systems using a regression model.
 
-\begin{figure}
-\centering
-\includegraphics[width=\columnwidth]{images/system_overview.jpg}
-\caption{Proposed Approach}
-\label{fig:approach}
-\end{figure}
+\subsection{Early-Fusion Approach}
 
-\subsection{Item-Based Collaborative Filtering (IBCF)}
+This approach adapts default algorithms to deal with modified hybrid input data. This data contains combinations and/or augmentations of data from multiple different sources.
 
-This approach uses the similarity between items to recommend similar items for a user or predict how would a user rate an item. When users rate an item, that item's similar items are picked from the existing system model and added to the user's recommendations. This approach is usually preferred over other memory-based approaches (user-based) when the system has more users than items as it leads to a more stable rating distribution.
+\subsubsection{Item-based Collaborative Filtering (IBCF)}
 
-Figure (\ref{fig:approach}) shows the basic steps of IBCF approach to predict how a user would rate an item. First the model has to be built by finding the similarity between all pairs of items. Then, the most similar $ k $ items which are already rated by the user are selected to compute the predicted rating of that user of the item. This computation of the rating is the average of that user's ratings for the selected items.
+This approach measures the similarity between items to recommend similar items for a user or predict how would he/she rate an item. When users rate an item, its similar items are picked from the existing system model and added to user's recommendations. This approach is usually preferred over other memory-based approaches (user-based) when the system has more users than items as it leads to a more stable rating distribution.
 
-To find the similarity between two items, one can use previous users' ratings of these items and/or items' attributes. In this task, previous users' ratings are provided along some other attributes for movies which are the items of this task. The provided attributes for movies were enough to search for them in some public movie databases and other public resources to collect some other attributes for these movies. The similarity between two items is then calculated using a weighted sum scheme as in the following equation:
+Figure (\ref{fig:ibcf_approach}) shows the basic steps of IBCF approach to predict how a user would rate an item. First a model is built by finding the similarity between all pairs of items. Then, the most similar $ k $ items which have been already rated by the user are selected to compute the predicted rating of that user for the item. This computed rating is the average rating of all selected items rated by that user.
+
+The similarity between two items is calculated using a weighted sum scheme that combines the ratings-based similarity that uses previous users' ratings and the content-based similarity that uses the crawled information from on-line movie sources. The following equation shows how the similarity between two movies is calculated:
 \begin{equation}
 sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
 \end{equation}
 Where:
 
-$ sim_{r} $ is the similarity between two movies (m1, m2) based on previous ratings
+$ sim_{r} $ is the ratings-based similarity between the movies (m1, m2)
 
-$ sim_{a} $ is the similarity between two movies (m1, m2) based on the collected attributes
+$ sim_{a} $ is the content-based similarity between the movies (m1, m2)
 
-$ \alpha $  is a weighting factor, in practice this factor performed best when set to (1.0), which means using only the attributes-based similarity
+$ \alpha $  is a weighting factor, in practice this factor performed best when set to (1.0), which means using only the content-based similarity
 
-\subsubsection{Ratings-Based Similarity}
-
-This similarity can take many forms, like the correlation between the compared ratings or the cosine of the angle between the vectors that are formed with these ratings. These similarity measures were explored in more details and experimented in the first task. The cosine similarity performed the best with IBCF. Therefore, it the only method that was experimented in this task.
-
-\subsubsection{Attributes-Based Similarity}
-
-In this task, we were provided by the title, year and genres of the movies. We used this information to crawl other information about these movies from different online open resources. The crawled information were aggregated and used to measure how movies are similar to each other.
-
-\subsubsection*{Data Sources}
-
-\textbf{OMDB} and \textbf{TMDB} are open movie databases accessible via custom web APIs. They provide much information about movies like for instance genres, actors, directors, writers, ratings. The provided ratings are either automatic ratings based on critics and reviews of the movies (Tomatometer from TMDB) or average user ratings collected from different sources (IMDB, TMDB).
-
-\textbf{DBpedia} is a data-oriented interface to Wikipedia community. It combines the information spread across many Wikipedia pages into a single integrated database. This information is accessed using SPARQL which is a semantic query language for databases that store data Resource Description Framework (RDF) format. A lot of information about movies can be crawled from DBpedia using SPARQL.
-
-\textbf{Twitter} is a popular social network which users can use to write about anything. It provides a Streaming and Search APIs to access users' posts (Tweets). The retrieved Tweets can be filtered using different keywords (Hashtags). These Tweets may contain users' reviews about movies which can be mined to extract the average ratings of movies using sentiment analysis.
-
-OMDB, TMDB and DBpedia were crawled in this task to get more information about the movies, while Twitter was discarded as ''the Twitter Search API searches against a sampling of recent Tweets published in the past 7 days'' [According to Twitter's Search API documentation].
-
-\subsubsection*{Similarity Measures}
-
-The crawled information was checked and only important attributes were kept to be processed by the similarity model. These attributes were divided into seven categories:
+The crawled movie attributes were divided into seven categories as follows:
 \begin{itemize}
-\item Year: contains the release year of the movie
-\item Rating: contains all crawled ratings for the movie (Tomatometer, IMDB Rating, Tomato User Rating, …)
-\item Genres: contains the genres of the movie
-\item Stakeholders: contains all the main players in the movie production (writers, actors, directors and production companies)
-\item Description: contains all text descriptions crawled from the different sources
-\item Other: contains any other important features (awards, …)
+	\item Year: contains the release year of the movie
+	\item Rating: contains all crawled ratings of the movie (Tomato Meter, IMDB Rating, Tomato User Rating, …)
+	\item Genres: contains genres of the movie
+	\item Stakeholders: contains all main players in the movie production (writers, actors, directors and production companies)
+	\item Description: contains all text descriptions crawled from the different sources
+	\item Other: contains any other important features (awards, …)
 \end{itemize}
-For each category, a specific similarity measure is used. The similarity between two movies is calculated as a weighted sum of the similarities between their categorized attributes.
+For each category, a specific similarity measure is used. Then, the similarity between two movies is calculated as a weighted sum of the similarities between their categorized attributes. The measures for each attribute category were discussed in more details in task 2.
 
-The similarity between ''Year'' and ''Rating'' attributes is measured using \textit{Euclidean Distance}. The year is a scalar value were the rating is a vector of values each of which represents different crawled rating.
+\begin{figure}
+	\centering
+	% \includegraphics[width=\columnwidth]{images/density.png}
+	\caption{Item-based collaborative filtering approach}
+	\label{fig:ibcf_approach}
+\end{figure}
 
-The similarity between ''Genres'' and ''Stakeholders'' attributes is measured using \textit{Dice's Coefficient}. Dice's Coefficient is a common similarity method between two sets. Genres and full stakeholders' names were considered the items of the sets. This ensures that two different stakeholders with the same first or last name won't have any similarity. The similarity between stakeholders is calculated as a weighted sum of the similarities between each set of stakeholders (writers, actors, directors and production companies) using the same similarity measure.
+\subsubsection{User-based Collaborative Filtering (UBCF)}
 
-The similarity between ''Other'' attributes is measured based on the attribute. Currently, we are considering only the awards which is measured using Dice's Coefficient.
+This approach measures the similarity between users to recommend new items for a user or predict how would he/she rate an item based on the ratings of other similar users. This approach is widely used and has good recommendation results but it does not scale with the number of users when it goes very high.
 
-The similarity between ''Description'' attributes is measured using one of the corpus-based similarity measures namely, Term Frequency-Inverse Document Frequency (TF-IDF), Latent Semantic Indexing (LSI) and Latent Dirichlet allocation (LDA). We defined a virtual document for each movie which is all the crawled text descriptions of it. We then used all virtual documents of all movies as our corpus to build these models.
+Figure (\ref{fig:ubcf_approach}) shows the basic steps of UBCF approach to predict how a user would rate an item. First a model is built by finding the similarity between all pairs of current users. Then, the most similar $ k $ users which have already rated the item are selected to compute the predicted rating of that user for the item. This computed rating is the average rating of all selected users.
 
-\textbf{TF-IDF} is a numerical statistic that reflects how important a term (word) is to a document in a corpus. It is used in Vector Space Model where a matrix containing these numerical statistics for a term in a document (rows represent each document and columns represent unique terms) is constructed from a corpus. Documents are then compared by taking the cosine of the angle between the two vectors formed by any two rows.
+The similarity between two users is calculated using a weighted sum scheme similar to the one used for calculating the similarity between two movies. This scheme also combines ratings-based similarity and content-based similarity that uses the users information provided in the third file (the users set).
 
-\textbf{LSI} assumes that terms that are close in meaning will occur in similar pieces of text. A matrix containing a numerical statistic for a term in a paragraph (rows represent unique terms and columns represent each paragraph) is constructed from a corpus. Singular Value Decomposition (SVD) is used to reduce the number of rows while preserving the similarity structure among columns. Terms are then compared by taking the cosine of the angle between the two vectors formed by any two rows.
+Content-based similarity between two users is calculated as a weighted sum of the individual similarities between their attributes. Age and zip-code similarities were measured using the Euclidean distance. Gender and job similarities were measured using a binary scheme, where two values are either similar (when they match exactly) or not similar (when they differ).
 
-\textbf{LDA} is an example of a topic model that allows terms or documents to be represented by a set of probabilities of falling into some unobserved groups (topics). It posits that each document is a mixture of a small number of topics and that each word's creation is attributable to one of the document's topics. Terms or documents are then compared by taking the cosine of the angle between the two vectors formed by any two sets of probabilities. LDA is similar to Probabilistic LSA (pLSA).
+The weights for combining individual similarities into the final content-based similarity between two users were set manually due to the lack of evaluation time and resources.
 
-LSA and LDA uses a predefined number of topics which represent the number of latent factors that should be extracted and used to represent the terms and documents.
+\begin{figure}
+	\centering
+	% \includegraphics[width=\columnwidth]{images/density.png}
+	\caption{User-based collaborative filtering approach}
+	\label{fig:ubcf_approach}
+\end{figure}
 
+\subsubsection{Matrix Factorization????}
+
+\subsection{Late-Fusion Approach}
+
+
+
+
+
+\section{STOPPED HERE}
 \section{Experimental Setup}
 
 As the final predictions of the task are evaluated using Root Mean Square Error (RMSE), we used this measure to evaluate our models. To make sure that the evaluation is not biased, we used 10-fold cross validation on the provided ''training.dat'' file as the true ratings are provided. Using cross-validation will ensure that no triples (user, item, rating) are used in both training (building) and evaluating the model.
