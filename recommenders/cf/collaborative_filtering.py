@@ -503,3 +503,10 @@ class CF:
 
                 self.__pairwise_similarity[key_i][key_j] = ((1 - alpha) * self.__pairwise_similarity[key_i][key_j]) + \
                                                              (alpha * external_similarities[key_i][key_j])
+
+    # Set the pairwise similarity matrix to some external similarities matrix
+    # This function should normally not be used
+    # It is just for testing purposes
+    def set_pairwise_similarity(self, external_similarities):
+        self.__pairwise_similarity = external_similarities
+

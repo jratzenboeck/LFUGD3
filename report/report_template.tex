@@ -142,36 +142,70 @@ The weights for combining individual similarities into the final content-based s
 
 \subsection{Late-Fusion Approach}
 
+This approach aggregates the outputs of multiple recommendation systems into one final recommendation. The aggregation could be using weighting or voting schemes. In the weighting scheme, the results of all individual recommendation systems are combined, so the final result may differ from all individual results. In the voting scheme, each individual recommendation system votes for a result (for example, increment its occurrences by one); the final recommendation is one of the individual recommendations and it is the one with the highest votes.
 
+Figure (\ref{fig:late_fusion_approach}) shows the basic steps of late-fusion approach. Five different recommendation systems were aggregated using a weighting scheme. To set the weights, we used a K-Nearest-Neighbor regression model. The outputs of these five recommendation systems are used as inputs for the regression model, and the final output is the final submitted rating.
 
+The five recommendation systems that were aggregated are:
+\begin{itemize}
+	\item Item-based collaborative filtering
+	\item User-based collaborative filtering
+	\item Matrix factorization
+	\item Content-based collaborative filtering (with movies information as the content)
+	\item Content-based collaborative filtering (with users information as the content)
+\end{itemize}
 
+\begin{figure}
+	\centering
+	% \includegraphics[width=\columnwidth]{images/density.png}
+	\caption{Late-fusion approach}
+	\label{fig:late_fusion_approach}
+\end{figure}
 
-\section{STOPPED HERE}
 \section{Experimental Setup}
 
 As the final predictions of the task are evaluated using Root Mean Square Error (RMSE), we used this measure to evaluate our models. To make sure that the evaluation is not biased, we used 10-fold cross validation on the provided ''training.dat'' file as the true ratings are provided. Using cross-validation will ensure that no triples (user, item, rating) are used in both training (building) and evaluating the model.
 
-Tuning all the weights automatically is not feasible as each single evaluation takes from (10-24) hours. We started by determining the weights of the attributes-based movie similarity. We setup an online excel document and asked some friends who often watch movies to order and share the preferences of selecting a movie to watch from the most important (setting its order to one) to the least important (setting its order to 9). These preferences are the attributes that we are considering in measuring the similarity between movies. Each user was given a choice to provide his name or keep it anonymous. People's preferences are kept visible to everybody. We then averaged the order of each attribute and extracted the weight of it by subtracting this average from 9. Table (\ref{tab:preferences}) shows the preferences and their average and calculated weight.
+Tuning all the weights automatically for content-based similarity measures (for movies and users) is not feasible as each single evaluation takes from (10-40) hours. We set these weights manually using a simple voting approach. Multiple persons were asked to rank their preferences and the average rankings were used to compute the weights (more details are available in task 2). Tables (\ref{tab:movie_weights}, \ref{tab:user_weights}) show the weights for each set of attributes for movies and users respectively.
 
 \begin{table}[]
 \centering
 \begin{tabular}{|l|c|c|}
 \hline
-\textbf{Attribute}   & \textbf{Average} & \textbf{Weight} \\ \hline
-Year                 & 4.22             & 5               \\ \hline
-Rating               & 3.00             & 6               \\ \hline
-Genres               & 2.89             & 7               \\ \hline
-Actors               & 4.00             & 5               \\ \hline
-Production Companies & 6.78             & 3               \\ \hline
-Directors            & 5.44             & 4               \\ \hline
-Writers              & 5.44             & 4               \\ \hline
-Description          & 3.11             & 6               \\ \hline
-Other                & 7.89             & 2               \\ \hline  
+\textbf{Attribute} & \textbf{Weight} \\ \hline
+Year             & 5               \\ \hline
+Rating             & 6               \\ \hline
+Genres             & 7               \\ \hline
+Actors             & 5               \\ \hline
+Production Companies             & 3               \\ \hline
+Directors             & 4               \\ \hline
+Writers             & 4               \\ \hline
+Description             & 6               \\ \hline
+Other             & 2               \\ \hline  
 \end{tabular}
-\caption{User Preferences for Selecting Movies}
-\label{tab:preferences}
+\caption{Weights of movie feature}
+\label{tab:movie_weights}
 \end{table}
 
+\begin{table}[]
+	\centering
+	\begin{tabular}{|l|c|c|}
+		\hline
+		\textbf{Attribute} & \textbf{Weight} \\ \hline
+		Gender             & 5               \\ \hline
+		Age             & 4               \\ \hline
+		Job             & 3               \\ \hline
+		Zip-code             & 2               \\ \hline
+	\end{tabular}
+	\caption{Weights of movie feature}
+	\label{tab:user_weights}
+\end{table}
+
+
+
+
+
+\section{STOPPED HERE????????}
 As there is no clear documented way for selecting the number of topics (latent factors) for LSI and LDA, this parameter should be tuned automatically. Unfortunately, this was not feasible for this task due to the lack of resources. Professor Wray Buntine, Monsh University, wrote as an answer to online question\footnote{\url{https://www.quora.com/Latent-Dirichlet-Allocation-LDA-What-is-\\the-best-way-to-determine-k-number-of-topics-in-topic-modeling}} about how to set this parameter: ''With 20,000 documents using a good implementation of HDP-LDA with a Gibbs sampler I can sometimes get  K≈2000'', ''Now inspecting the 2000 topics, maybe 1600 have good quality comprehensibility''. As we have 3883 virtual documents and these virtual documents are relatively short (compared to web-page discussing a topic), we set this parameter to (150).
 
 Fixing these parameters, we first evaluated our approach using only the attributes-based similarity between movies $ \alpha=1.0 $. The following configurations were used:
