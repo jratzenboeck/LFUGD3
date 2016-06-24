@@ -20,11 +20,8 @@ def get_shuffled_trainingset(path):
 
 
 def get_splitted_datasets(path):
-    dataset = read_trainingset(path)
-    #count_70_pct = int(len(dataset) * 0.7)
-    #rec_train = dataset[:count_70_pct]
-    #rec_test = dataset[len(dataset) - count_70_pct:]
-    rec_train, rec_test = train_test_split(dataset, test_size=0.3, random_state=42)
+    dataset = get_shuffled_trainingset(path)
+    rec_train, rec_test = train_test_split(dataset, test_size=0.3)
     return (rec_train, rec_test)
 
 
