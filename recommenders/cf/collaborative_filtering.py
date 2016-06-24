@@ -110,7 +110,7 @@ class CF:
         with open(path, newline='') as file:
             reader = csv.reader(file, delimiter='\t', quotechar='|')
             for row in reader:
-                (user_id, movie_id, rating) = (row[0], row[1], float(row[2]))
+                (user_id, movie_id, rating) = (int(row[0]), int(row[1]), float(row[2]))
                 dataset.append((user_id, movie_id, rating))
 
         ''' ***
@@ -220,8 +220,8 @@ class CF:
     def set_dataset(self, dataset):
         self.__dataset = {}
         for (user_id, movie_id, rating) in dataset:
-            self.__dataset.setdefault(user_id, {})
-            self.__dataset[user_id][movie_id] = float(rating)
+            self.__dataset.setdefault(int(user_id), {})
+            self.__dataset[int(user_id)][int(movie_id)] = float(rating)
 
         # Set mean user ratings
         self.__mean_user_ratings = {}
@@ -235,7 +235,7 @@ class CF:
         with open(path, newline='') as file:
             reader = csv.reader(file, delimiter='\t', quotechar='|')
             for row in reader:
-                (user_id, movie_id, rating) = (row[0], row[1], float(row[2]))
+                (user_id, movie_id, rating) = (int(row[0]), int(row[1]), float(row[2]))
                 dataset.append((user_id, movie_id, rating))
 
         self.set_dataset(dataset)
@@ -250,7 +250,7 @@ class CF:
         dataset_centered = self.__dataset
         # If the algorithm it item-based collaborative filtering,
         # invert the dataset to be item-centric
-        if (item_based):
+        if item_based:
             dataset_centered = CF.__transpose_dataset(self.__dataset)
 
         c = 0
@@ -308,8 +308,8 @@ class CF:
         with open(path, newline='') as file:
             reader = csv.reader(file, delimiter='\t', quotechar='|')
             for row in reader:
-                key_i = row[0]
-                key_j = row[1]
+                key_i = int(row[0])
+                key_j = int(row[1])
                 similarity = float(row[2])
 
                 self.__pairwise_similarity.setdefault(key_i, {})
@@ -458,7 +458,7 @@ class CF:
         with open(path, newline='') as file:
             reader = csv.reader(file, delimiter='\t', quotechar='|')
             for row in reader:
-                (user_id, movie_id) = (row[0], row[1])
+                (user_id, movie_id) = (int(row[0]), int(row[1]))
                 dataset.append((user_id, movie_id))
 
         # Predict
@@ -502,7 +502,7 @@ class CF:
                     continue
 
                 self.__pairwise_similarity[key_i][key_j] = ((1 - alpha) * self.__pairwise_similarity[key_i][key_j]) + \
-                                                             (alpha * external_similarities[key_i][key_j])
+                                                           (alpha * external_similarities[key_i][key_j])
 
     # Set the pairwise similarity matrix to some external similarities matrix
     # This function should normally not be used

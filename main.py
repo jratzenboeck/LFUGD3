@@ -20,7 +20,7 @@ def load_movies(path):
 
     movies = {}
     for movie_id, movie_data in data_json.items():
-        movies[int(movie_id)] = Movie(movie_id=movie_id, dictionary=movie_data)
+        movies[int(movie_id)] = Movie(movie_id=int(movie_id), dictionary=movie_data)
 
     return movies
 
@@ -32,7 +32,13 @@ def load_users(path):
         reader = csv.reader(file, delimiter='\t', quotechar='|')
         for row in reader:
             (user_id, gender, age, job, zip_code) = (int(row[0]), row[1], int(row[2]), int(row[3]), float(row[4]))
-            users[user_id] = User(user_id=user_id)
+            user = User(user_id=user_id)
+            user.gender = gender
+            user.age = age
+            user.job = job
+            user.zip_code = zip_code
+
+            users[user_id] = user
 
     return users
 
