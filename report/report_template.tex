@@ -46,19 +46,19 @@
 
 \section{Description of Task \taskno}
 
-In this task, we should predict a set of movie ratings for 200.000 (user, movie) tuples. To fulfill the task, three different datasets are provided. The first one contains 800.000 (user, movie, rating) triples which represent previous movie ratings. The second contains more details about the movies namely, title, release year and genres. The third contains some information about the users who rated the movies namely, gender, age range, job and zip-code. Information provided by these three files combined with extended information crawled from multiple on-line movie sources should be used in experimenting and evaluating different hybrid recommendation systems. The fourth file contains a set of (user, movie) tuples which should finally be enriched by predicted user ratings for the movies using the best evaluated recommendation system.
+In this task, we should predict a set of movie ratings for 200.000 (user, movie) tuples. To fulfil the task, four different datasets are provided. The first one contains 800.000 (user, movie, rating) triples which represent previous movie ratings. The second contains more details about the movies namely, title, release year and genres. The third contains some information about the users who rated the movies namely, gender, age range, job and zip-code. Information provided by these three files combined with extended information crawled from multiple on-line movie sources should be used in experimenting and evaluating different hybrid recommendation systems. The fourth file contains a set of (user, movie) tuples which should finally be enriched by predicted user ratings for the movies using the best evaluated recommendation system.
 
 The remainder of this paper is organized as follows. In section 2 we provide an overview and a short analysis on the provided datasets. Section 3 explains how we addressed this task. It also proposes our parallelized and monolithic approaches to predict the missing ratings. Section 4 presents how we tested our approaches using different configurations and also the setups conducted for these configurations. Section 5 shows the results for different setups, and the last section wraps up the task by concluding it.
 
 \section{Data Analysis}
 
-Data analysis was performed mainly in tasks 1 and 2. The first file of this task contains 800167 (user\_id, movie\_id, rating) tuples used for training with the highest rating density at a four. The third file of this task contains 200042 (user\_id, movie\_id) tuples used for predicting the final ratings with 25 new movie\_ids which don't exist in the training set.
+Data analysis was performed mainly in tasks 1 and 2. The first file of this task contains 800167 (user\_id, movie\_id, rating) tuples used for training with the highest rating density at a four. The second file of this task contains 200042 (user\_id, movie\_id) tuples used for predicting the final ratings with 25 new movie\_ids which don't exist in the training set.
 
-The second file contains 3883 (id, title, genres) triples which fit the given rated (to be rated) movies for this task. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). Figure (\ref{fig:sources}) shows the percentage of movies that we were able to enrich from each of these sources with (94\%, 92\%, 82\%) from (OMDB, TMDB, DBPedia) respectively.
+The second file contains 3883 (id, title, genres) triples which equal the number of total movies to be rated by the users. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). Figure (\ref{fig:sources}) shows the percentage of movies that we were able to enrich from each of these sources with (94\%, 92\%, 82\%) from (OMDB, TMDB, DBPedia) respectively.
 
 OMDB was used as the main information source, where TMDB and DBPedia were used to enrich this source either by filling in the missing values or by extending the basic information. This process led to 95 features for each movie, which were analyzed and processed to end up with 17 important features that have relatively high densities.
 
-The third file contains 6040 (id, gender, age, job, zip-code) quintuples which also fit the users who has (should have) ratings in the datasets of this task. The user information provided was complete and sound (no missing or unknown values). Figure (???) shows histograms for this set. The users tend to be males (71\%) and in the age range of [25, 34] (34\%).
+The third file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure (???) shows histograms for this set. The users tend to be males (71\%) and in the age range of [25, 34] (34\%).
 
 \begin{figure}
 \centering
@@ -76,12 +76,12 @@ The third file contains 6040 (id, gender, age, job, zip-code) quintuples which a
 
 \section{Proposed Method}
 
-For this task, we worked on two sets of approaches: early-fusion (parallelized design) and late-fusion (monolithic design). For the early-fusion approach, we boosted item-based collaborative filtering using content-based movies similarity, and user-based collaborative filtering using content-based users similarity. [???] Finally, we boosted matrix factorization approach using ??????????.
+For this task, we worked on two sets of approaches: Early-fusion (parallelized design) and Late-fusion (monolithic design). For the early-fusion approach, we boosted item-based collaborative filtering using content-based movies similarity, and user-based collaborative filtering using content-based users similarity. [???] Finally, we boosted matrix factorization approach using ??????????.
 For the late fusion approach, we combined the results of multiple recommendation systems using a regression model.
 
 \subsection{Early-Fusion Approach}
 
-This approach adapts default algorithms to deal with modified hybrid input data. This data contains combinations and/or augmentations of data from multiple different sources.
+This approach adapts our prior collaborative filtering and content based algorithms to deal with modified hybrid input data. This data contains combinations and/or augmentations of data from multiple different sources.
 
 \subsubsection{Item-based Collaborative Filtering (IBCF)}
 
@@ -138,15 +138,17 @@ The weights for combining individual similarities into the final content-based s
 	\label{fig:ubcf_approach}
 \end{figure}
 
-\subsubsection{Matrix Factorization????}
+\subsubsection{Matrix Factorization}
+
+This approach tries to find out hidden parameters for the user ratings and therefore measure the interest of a user in an item in multiple dimensions. The implementation does a matrix factorization by computing the Singular Value Decomposition (SVD) and learns the matrix factorization model with a Gradient Descent approach. 
 
 \subsection{Late-Fusion Approach}
 
-This approach aggregates the outputs of multiple recommendation systems into one final recommendation. The aggregation could be using weighting or voting schemes. In the weighting scheme, the results of all individual recommendation systems are combined, so the final result may differ from all individual results. In the voting scheme, each individual recommendation system votes for a result (for example, increment its occurrences by one); the final recommendation is one of the individual recommendations and it is the one with the highest votes.
+This approach aggregates the outputs of multiple recommendation systems into one final recommendation. The aggregation could be using weighting or voting schemes. In the weighting scheme, the results of all individual recommendation systems are combined, so the final result may differ from all individual results. In the voting scheme, each individual recommendation system votes for a result (for example, increment its occurrences by one). The final recommendation is the individual recommendations with the highest votes.
 
-Figure (\ref{fig:late_fusion_approach}) shows the basic steps of late-fusion approach. Five different recommendation systems were aggregated using a weighting scheme. To set the weights, we used a K-Nearest-Neighbor regression model. The outputs of these five recommendation systems are used as inputs for the regression model, and the final output is the final submitted rating.
+Figure (\ref{fig:late_fusion_approach}) shows the basic steps of late-fusion approach. Five different recommendation systems were aggregated using a weighting scheme. To set the weights, we used a K-Nearest-Neighbor regression model. The outputs of these five recommendation systems are merged together in a file where each column represents the predicted rating for each individual approach. One column contains the actual ratings from the test set. Subsequently these outputs are used as input to train the regression model and determine the optimal weights to minimize the introduced error. Using an optimized weighting scheme, the final output is the submitted rating.
 
-The five recommendation systems that were aggregated are:
+The five recommendation systems which were aggregated are:
 \begin{itemize}
 	\item Item-based collaborative filtering
 	\item User-based collaborative filtering
@@ -183,7 +185,7 @@ Writers             & 4               \\ \hline
 Description             & 6               \\ \hline
 Other             & 2               \\ \hline  
 \end{tabular}
-\caption{Weights of movie feature}
+\caption{Weights of movie features}
 \label{tab:movie_weights}
 \end{table}
 
@@ -197,15 +199,15 @@ Other             & 2               \\ \hline
 		Job             & 3               \\ \hline
 		Zip-code             & 2               \\ \hline
 	\end{tabular}
-	\caption{Weights of movie feature}
+	\caption{Weights of user features}
 	\label{tab:user_weights}
 \end{table}
 
+As input for the parallelized hybridization the predictions from the different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks.    Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbour regression model to predict optimal target weights for the final weighted hybrid run. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, was chosen for the final predictions. 
 
+// TODO: Mention different outcomes of the regression model
 
-
-
-\section{STOPPED HERE????????}
+// TODO: Think about whether we need this detailed description below again in this task (I don't think it is necessary)
 As there is no clear documented way for selecting the number of topics (latent factors) for LSI and LDA, this parameter should be tuned automatically. Unfortunately, this was not feasible for this task due to the lack of resources. Professor Wray Buntine, Monsh University, wrote as an answer to online question\footnote{\url{https://www.quora.com/Latent-Dirichlet-Allocation-LDA-What-is-\\the-best-way-to-determine-k-number-of-topics-in-topic-modeling}} about how to set this parameter: ''With 20,000 documents using a good implementation of HDP-LDA with a Gibbs sampler I can sometimes get  K≈2000'', ''Now inspecting the 2000 topics, maybe 1600 have good quality comprehensibility''. As we have 3883 virtual documents and these virtual documents are relatively short (compared to web-page discussing a topic), we set this parameter to (150).
 
 Fixing these parameters, we first evaluated our approach using only the attributes-based similarity between movies $ \alpha=1.0 $. The following configurations were used:
