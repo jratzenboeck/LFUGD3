@@ -6,17 +6,17 @@ import time
 
 
 def load_dataset(path):
-    input = []
-    output = []
+    input_attributes = []
+    output_attribute = []
     with open(path, newline='') as file:
         reader = csv.reader(file, delimiter='\t', quotechar='|')
         next(reader, None)  # skip the header
         for row in reader:
             (cf_item, cf_user, cf_svd, content_item, actual_rating) = (float(row[0]), float(row[1]), float(row[2]), float(row[3]), float(row[5]))
-            input.append([cf_item, cf_user, cf_svd, content_item])
-            output.append(actual_rating)
+            input_attributes.append([cf_item, cf_user, cf_svd, content_item])
+            output_attribute.append(actual_rating)
 
-    return input, output
+    return input_attributes, output_attribute
 
 
 def knn_cross_validate(dataset_input, dataset_output, k, n_folds=10):
