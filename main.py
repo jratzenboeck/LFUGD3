@@ -177,11 +177,11 @@ def main_ibcf():
     cf.load_dataset('data/training.dat')
     cf.train(item_based=True)
     cf.save_model('models/items_model_sim{}.csv'.format(cf.similarity.__name__))
+    # cf.load_model('models/items_model_sim{}.csv'.format(cf.similarity.__name__))
     # Inject the external similarities
     cf.modify_pairwise_similarity(movies_similarity, alpha=input['alpha'])
     cf.predict_missing_ratings(item_based=True)
     predictions = cf.predict_for_set_with_path('data/predict.dat')
-    print(predictions)
 
     # Output
     output_path = 'output/predict_output_%s.csv' % time.strftime('%y_%m_%d_%H_%M_%S')
@@ -213,9 +213,9 @@ def main_ubcf():
                                      zip_code_weight=input['zip_code_weight'])
 
     # Compute pairwise users similarity
-    users_similarity = user_similarity.pairwise_similarity(users)
-    save_pairwise_similarity(users_similarity, path='models/users_similarity.csv')
-    # users_similarity = load_pairwise_similarity('models/users_similarity.csv')
+    # users_similarity = user_similarity.pairwise_similarity(users)
+    # save_pairwise_similarity(users_similarity, path='models/users_similarity.csv')
+    users_similarity = load_pairwise_similarity('models/users_similarity.csv')
 
     # UBCF Cross Validation
     rmse = CF.cross_validate('data/shuffled.training.dat',
@@ -242,12 +242,11 @@ def main_ubcf():
     '''cf = CF(k=input['k'], similarity=similarity_cosine)
     cf.load_dataset('data/training.dat')
     cf.train(item_based=False)
-    cf.save_model('models/items_model_sim{}.csv'.format(cf.similarity.__name__))
+    cf.save_model('models/users_model_sim{}.csv'.format(cf.similarity.__name__))
     # Inject the external similarities
-    cf.modify_pairwise_similarity(movies_similarity, alpha=input['alpha'])
+    cf.modify_pairwise_similarity(users_similarity, alpha=input['alpha'])
     cf.predict_missing_ratings(item_based=False)
     predictions = cf.predict_for_set_with_path('data/predict.dat')
-    print(predictions)
 
     # Output
     output_path = 'output/predict_output_%s.csv' % time.strftime('%y_%m_%d_%H_%M_%S')

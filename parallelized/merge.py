@@ -3,7 +3,7 @@ from os.path import basename
 import csv
 
 
-def read_data(recommenders_output_directory, actual_values_directory):
+def read_data(recommenders_output_directory, actual_values_directory=None):
     data = {}
 
     # Reading all output files and accumulate ratings in case of duplicates
@@ -32,46 +32,64 @@ def read_data(recommenders_output_directory, actual_values_directory):
 
     # Flatten the accumulated results by averaging them
     for key in data:
+        data[key]['userId_movieId'] = key
         for method in data[key]:
+            # Skip the key
+            if method == 'userId_movieId':
+                continue
+
             data[key][method] = data[key][method]['sum'] / data[key][method]['count']
 
     # Reading actual values
-    files = glob('%s/*.test' % actual_values_directory)
-    for file_path in files:
-        with open(file_path, newline='') as file:
-            reader = csv.reader(file, delimiter='\t', quotechar='|')
-            for row in reader:
-                (user_id, movie_id, rating) = (row[0], row[1], float(row[2]))
-                key = '%s_%s' % (user_id, movie_id)
+    if actual_values_directory is None:
+        files = glob('%s/*.test' % actual_values_directory)
+        for file_path in files:
+            with open(file_path, newline='') as file:
+                reader = csv.reader(file, delimiter='\t', quotechar='|')
+                for row in reader:
+                    (user_id, movie_id, rating) = (row[0], row[1], float(row[2]))
+                    key = '%s_%s' % (user_id, movie_id)
 
-                if key not in data:
-                    data.setdefault(key, {})
-
-                data[key]['userId_movieId'] = key
-                data[key]['actual_rating'] = rating
+                    if key in data:
+                        data[key]['actual_rating'] = rating
 
     return data
 
 
-def write_data(data, regression_input_directory):
+def write_data(data, output_file_path):
     # Get the column names from the first item
     header = []
     for key in data:
         header = data[key].keys()
         break
 
-    output_path = '%s/reg.train' % regression_input_directory
-    with open(output_path, 'w', newline='') as file:
+    with open(output_file_path, 'w', newline='') as file:
         dict_writer = csv.DictWriter(file, header, delimiter='\t', quotechar='|', quoting=csv.QUOTE_MINIMAL)
         dict_writer.writeheader()
         dict_writer.writerows(data.values())
 
 
-if __name__ == '__main__':
-    rec_output_dir = 'data/rec_output'
+def merge_training_files():
+    rec_output_dir = 'data/rec_output/train'
     rec_test_dir = 'data/rec_test'
-    reg_input_dir = 'data/reg_input'
+    reg_input_path = 'data/reg_input/reg.train'
     data = read_data(recommenders_output_directory=rec_output_dir,
                      actual_values_directory=rec_test_dir)
     write_data(data=data,
-               regression_input_directory=reg_input_dir)
+               output_file_path=reg_input_path)
+
+
+def merge_prediction_files():
+    rec_output_dir = 'data/rec_output/predict'
+    rec_test_dir = 'data/rec_test'
+    reg_input_path = 'data/reg_input/reg.predict'
+    data = read_data(recommenders_output_directory=rec_output_dir,
+                     actual_values_directory=rec_test_dir)
+    write_data(data=data,
+               output_file_path=reg_input_path)
+
+
+if __name__ == '__main__':
+    # merge_training_files()
+    merge_prediction_files()
+
