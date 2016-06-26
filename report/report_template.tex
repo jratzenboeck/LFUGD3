@@ -16,23 +16,23 @@
 \alignauthor J{\"u}rgen Ratzenb{\"o}ck\\
        \affaddr{Mat.nr.: 1256030}\\
        \email{juergen.ratzenboeck@gmail.com}\\ % or whichever you prefer
-       \affaddr{Score Percentage: 25\%}\\ % adapt accordingly
+       \affaddr{Score Percentage: 28\%}\\ % adapt accordingly
 % 2nd. group member
 \alignauthor Jonathan-Edwin Asamoah\\
        \affaddr{Mat.nr.: 1457554}\\
        \email{asamoahjonathan@outlook.com}\\
-       \affaddr{Score Percentage: 25\%}\\
+       \affaddr{Score Percentage: 28\%}\\
 \and
 % 3rd. group member
 \alignauthor Mhd Mousa Hamad\\
        \affaddr{Mat.nr.: 1556686}\\
        \email{mhd.mousa.hamad@gmail.com}\\
-       \affaddr{Score Percentage: 25\%}\\
+       \affaddr{Score Percentage: 28\%}\\
 % 4th. group member
 \alignauthor  Luka Vukas\\
        \affaddr{Mat.nr.: 1557457}\\
        \email{vukaslukaa@gmail.com}\\
-       \affaddr{Score Percentage: 25\%}\\
+       \affaddr{Score Percentage: 16\%}\\
 }
 
 % leave untouched!
@@ -54,11 +54,11 @@ The remainder of this paper is organized as follows. In section 2 we provide an 
 
 Data analysis was performed mainly in tasks 1 and 2. The first file of this task contains 800167 (user\_id, movie\_id, rating) tuples used for training with the highest rating density at a four. The second file of this task contains 200042 (user\_id, movie\_id) tuples used for predicting the final ratings with 25 new movie\_ids which don't exist in the training set.
 
-The second file contains 3883 (id, title, genres) triples which equal the number of total movies to be rated by the users. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). We were able to enrich (94\%, 92\%, 82\%) of the movies with external information from (OMDB, TMDB, DBPedia) respectively.
+The third file contains 3883 (id, title, genres) triples which equal the number of total movies to be rated by the users. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). We were able to enrich (94\%, 92\%, 82\%) of the movies with external information from (OMDB, TMDB, DBPedia) respectively.
 
 OMDB was used as the main information source, where TMDB and DBPedia were used to enrich this source either by filling in the missing values or by extending the basic information. This process led to 95 features for each movie, which were analyzed and processed to end up with 17 important features that have relatively high densities.
 
-The third file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure \ref{fig:agerangegender} shows that users tend to be males (71\%) and in the age range of [25, 34] (34\%).
+The fourth file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure \ref{fig:agerangegender} shows that users tend to be males (71\%) and in the age range of [25, 34] (34\%).
 
 \begin{figure}
 \centering
@@ -101,7 +101,7 @@ The crawled movie attributes were divided into seven categories as follows:
 	\item Genres: contains genres of the movie
 	\item Stakeholders: contains all main players in the movie production (writers, actors, directors and production companies)
 	\item Description: contains all text descriptions crawled from the different sources
-	\item Other: contains any other important features (awards, …)
+	\item Other: contains any other important features (eg.: awards)
 \end{itemize}
 For each category, a specific similarity measure is used. Then, the similarity between two movies is calculated as a weighted sum of the similarities between their categorized attributes. The measures for each attribute category were discussed in more detail in task 2.
 
@@ -114,7 +114,7 @@ For each category, a specific similarity measure is used. Then, the similarity b
 
 \subsubsection{User-based Collaborative Filtering (UBCF)}
 
-This approach measures the similarity between users to recommend new items for a user or predict how would he/she rate an item based on the ratings of other similar users. This approach is widely used and has good recommendation results but it does not scale with the number of users when it goes very high.
+This approach measures the similarity between users to recommend new items for a user or predict how he/she would rate an item based on the ratings of other similar users. This approach is widely used and has good recommendation results but it does not scale with the number of users when it goes very high.
 
 Figure (\ref{fig:ubcf_approach}) shows the basic steps of UBCF approach to predict how a user would rate an item. First a model is built by finding the similarity between all pairs of current users. Then, the most similar $ k $ users which have already rated the item are selected to compute the predicted rating of that user for the item. This computed rating is the average rating of all selected users.
 
@@ -133,12 +133,11 @@ The weights for combining individual similarities into the final content-based s
 
 \subsubsection{Matrix Factorization}
 
-This approach estimates hidden (meta) parameters from user ratings trying to describe them in a higher dimensional space (compared to the original dimensions of user and item). These parameters are called latent factors and they are not necessarily interpretable. This approach maps the two dimensions into the new latent ones and try to minimize the reconstruction error using multiple approaches like Singular Value Decomposition (SVD) or Gradient Descent.
+This approach estimates hidden (meta) parameters from user ratings trying to describe them in a higher dimensional space (compared to the original dimensions of user and item). These parameters are called latent factors and they are not necessarily interpretable. This approach maps the two dimensions into the new latent ones and tries to minimize the reconstruction error using multiple approaches like Singular Value Decomposition (SVD) or Gradient Descent.
 
 We tried to evaluate two extensions of matrix factorization.
 
 \textbf{\emph{Singular Value Decomposition++ (SVD++) }}
-\newline
 
 This approach improves the accuracy of SVD using explicit and implicit feedback from users. The preferences of a user are represented using a combination of these explicit and implicit feedbacks.
 
@@ -152,7 +151,7 @@ This approach enriches implicit and explicit feedbacks from SVD++ using meta-inf
 
 This approach aggregates the outputs of multiple recommendation systems into one final recommendation. The aggregation could be using weighting or voting schemes. In the weighting scheme, the results of all individual recommendation systems are combined, so the final result may differ from all individual results. In the voting scheme, each individual recommendation system votes for a result (for example, increment its occurrences by one). The final recommendation is the individual recommendations with the highest votes.
 
-Figure (\ref{fig:late_fusion_approach}) shows the basic steps of late-fusion approach. Five different recommendation systems were aggregated using a weighting scheme. To set the weights, we used a K-Nearest-Neighbor regression model. The outputs of these five recommendation systems are merged together in a file where each column represents the predicted rating for each individual approach. One column contains the actual ratings from the test set. Subsequently these outputs are used as input to train the regression model and determine the optimal weights to minimize the introduced error. Using an optimized weighting scheme, the final output is the submitted rating.
+Figure (\ref{fig:late_fusion_approach}) shows the basic steps of late-fusion approach. Five different recommendation systems were aggregated using a weighting scheme. To set the weights, we used a K-Nearest-Neighbor regression model. The outputs of these five recommendation systems are merged together in a file where each column represents the predicted rating for each individual approach. One column contains the actual ratings from the test set. Subsequently these outputs are used as input to train the regression model. 
 
 The five recommendation systems which were aggregated are:
 \begin{itemize}
@@ -170,11 +169,13 @@ The five recommendation systems which were aggregated are:
 	\label{fig:late_fusion_approach}
 \end{figure}
 
+The final prediction was done after determining the optimal parameter for the number of neighbors.
+
 \section{Experimental Setup}
 
 As the final predictions of the task are evaluated using Root Mean Square Error (RMSE), we used this measure to evaluate our models. To make sure that the evaluation is not biased, we used 10-fold cross validation on the provided ''training.dat'' file as the true ratings are provided. Using cross-validation will ensure that no triples (user, item, rating) are used in both training (building) and evaluating the model.
 
-To compare results of the different evaluated approaches, we introduced a simple mean-user-ratings approach as a baseline. This approach simply predicts the missing rating of a user for an item by averaging all his previous ratings.
+To compare results of the different evaluated approaches, we introduced our best RMSE value (from task 1: 0,8677) as a baseline. This approach simply predicts the missing rating of a user for an item by averaging all his previous ratings.
 
 \subsection{Content-based Similarities}
 Tuning all the weights automatically for content-based similarity measures (for movies and users) is not feasible as each single evaluation takes from (10-60) hours. We set these weights manually using a simple voting approach. Multiple persons were asked to rank their preferences and the average rankings were used to compute the weights (more details are available in task 2). Tables (\ref{tab:movie_weights}, \ref{tab:user_weights}) show the weights for each set of attributes for movies and users respectively.
@@ -230,7 +231,7 @@ For SVD++, we used the parameters from \cite{Koren:2009} which were used for a s
 \item Learn rate decay = 1
 \end{itemize}
 
-gSVD++ is based on SVD++. Therefore, we configured it using the same parameters mentioned above. We also used the number of factors which gave the best results for SVD++. Meta-information about the movies was provided to gSVD++ algorithm using created lists which maps our crawled movie attributes to the defined categories of attributes for gSVD++.
+gSVD++ is based on SVD++. Therefore, we configured it using the same parameters mentioned above. We also used the number of factors which gave the best results for SVD++. Meta-information about the movies was provided to gSVD++ algorithm using created lists which map our crawled movie attributes to the defined categories of attributes for gSVD++.
 \emph{We were not able to get results for this approach, due to lack of resources (memory resources). When our created lists for the movies and their associated crawled attributes reached a certain size, the script stopped with an out of memory exception.}
 
 \section{Results}
@@ -277,7 +278,7 @@ Due to the high amount of needed processing capacity we were not able to compute
 \end{table}
 
 \subsection{Late-Fusion Approach}
-Table \ref{tab:late_fusion_results} shows different evaluated configurations along with their RMSE value for the k-Nearest-Neighbors regression model. The best result shows an RMSE value of 0.8921 which outperforms the results from the early-fusion approach.
+Table (\ref{tab:late_fusion_results}) shows different evaluated configurations along with their RMSE value for the k-Nearest-Neighbors regression model. The best result shows an RMSE value of 0.8921 which outperforms the results from the early-fusion approach.
 \begin{table}
 	\centering	
 	\begin{tabular}{|c|c|}
@@ -302,7 +303,7 @@ Table \ref{tab:late_fusion_results} shows different evaluated configurations alo
 
 \section{Conclusions}
 
-The late-fusion approach yielded the best RMSE value after training our regression model with a 530 neighbors and predicting the missing ratings.  
+The late-fusion approach yielded the best RMSE value after training our regression model with 530 neighbors and predicting the missing ratings. 
 Evaluating several hybrid recommenders which were discussed in the lecture required a lot of resources and therefore we had to limit ourselves to a few approaches which seemed to be most promising.
 
 
