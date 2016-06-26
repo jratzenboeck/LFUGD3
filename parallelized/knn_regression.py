@@ -1,6 +1,7 @@
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.cross_validation import KFold
 from sklearn.metrics import mean_squared_error
+from decimal import Decimal
 import csv
 import time
 
@@ -64,12 +65,12 @@ if __name__ == '__main__':
     prediction_key, prediction_input = load_prediction_dataset('data/reg_input/reg.predict.dat')
 
     # Regression Cross Validation
-    '''for k in [1, 5, 10, 20, 40, 80, 160]:
-        rmse = knn_cross_validate(dataset_input=training_input, dataset_output=training_output, k=k, n_folds=10)
-        print('RMSE = %.4f for K = %d' % (rmse, k))'''
+    # for k in [1, 5, 10, 20, 40, 80, 160, 320, 330, 430, 530, 640, 650, 750, 850, 950, 1280]:
+    #     rmse = knn_cross_validate(dataset_input=training_input, dataset_output=training_output, k=k, n_folds=10)
+    #     print('RMSE = %.4f for K = %d' % (rmse, k))
 
-    # Regression Prediction
-    k = 2
+    #Regression Prediction
+    k = 530
     knn = KNeighborsRegressor(n_neighbors=k)
     knn.fit(training_input, training_output)
     prediction_output = knn.predict(prediction_input)
@@ -82,6 +83,6 @@ if __name__ == '__main__':
             key = prediction_key[i]
             user_id = key.split('_')[0]
             movie_id = key.split('_')[1]
-            predicted_rating = prediction_output[i]
-            writer.writerow([user_id, movie_id, predicted_rating])
+            predicted_rating = Decimal(prediction_output[i])
+            writer.writerow([user_id, movie_id, round(predicted_rating, 3)])
 
