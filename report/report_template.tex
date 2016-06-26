@@ -259,18 +259,18 @@ Table (\ref{tab:ibcf_results}) shows the evaluation results from the second task
 For the UBCF, we were not able to do more than a single run which took about ($ 60h $) on the cloud with a memory resource of ($ 12 GB $). The run was for ($ \alpha = 1 $) which means using only content-based similarity measure, and the result of this run was ($ RMSE = 0.974 $)
 
 Table (\ref{tab:svd_results}) shows the evaluation results for SVD++ using different number of latent factors. We can see that the best performance was with using $ 10 $ factors.
-
+Due to the high amount of needed processing capacity we were not able to compute all the configuration we planned to do.
 \begin{table}[]
 	\centering
 	\begin{tabular}{|c|c|}
 		\hline
 		\textbf{Number of Factors}                  & \textbf{RMSE} \\ \hline
-		\textbf{10} & 0,8960        \\ \hline
-		\textbf{50} & ---        \\ \hline
-		\textbf{100} & ---        \\ \hline
-		\textbf{200} & ---        \\ \hline
-		\textbf{BASELINE} & 1.036        \\ \hline
-
+\textbf{number of factors = 1} & 0,9021        \\ \hline
+\textbf{number of factors = 5} & 0,8998        \\ \hline
+\textbf{number of factors  = 10} & 0,8960      \\ \hline
+\textbf{number of factors  = 25} & ---        \\ \hline
+\textbf{number of factors  = 50} & ---        \\ \hline
+\textbf{number of factors  = 100} & ---        \\ \hline
 	\end{tabular}
 	\caption{SVD++ results using for different number of latent factors}
 	\label{tab:svd_results}
