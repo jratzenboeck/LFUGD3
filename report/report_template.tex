@@ -58,7 +58,7 @@ The second file contains 3883 (id, title, genres) triples which equal the number
 
 OMDB was used as the main information source, where TMDB and DBPedia were used to enrich this source either by filling in the missing values or by extending the basic information. This process led to 95 features for each movie, which were analyzed and processed to end up with 17 important features that have relatively high densities.
 
-The third file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure (???) shows histograms for this set. The users tend to be males (71\%) and in the age range of [25, 34] (34\%).
+The third file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure \ref{fig:density} shows histograms for this set. The users tend to be males (71\%) and in the age range of [25, 34] (34\%). Figure \ref{fig:agerangegender} illustrates this fact.
 
 \begin{figure}
 \centering
@@ -72,6 +72,13 @@ The third file provided contains 6040 (id, gender, age, job, zip-code) quintuple
 % \includegraphics[width=\columnwidth]{images/density.png}
 \caption{Histograms for users set}
 \label{fig:density}
+\end{figure}
+
+\begin{figure}
+\centering
+\includegraphics[width=\columnwidth]{images/agerange_gender.png}
+\caption{User analysis regarding age and gender}
+\label{fig:agerangegender}
 \end{figure}
 
 \section{Proposed Method}
