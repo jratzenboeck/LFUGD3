@@ -265,9 +265,9 @@ Due to the high amount of needed processing capacity we were not able to compute
 	\begin{tabular}{|c|c|}
 		\hline
 		\textbf{Number of Factors}                  & \textbf{RMSE} \\ \hline
-		1 & 0,9021        \\ \hline
-		5 & 0,8998        \\ \hline
-		10 & 0,8960      \\ \hline
+		1 & 0.9021        \\ \hline
+		5 & 0.8998        \\ \hline
+		10 & 0.8960      \\ \hline
 	\end{tabular}
 	\caption{SVD++ results using for different number of latent factors}
 	\label{tab:svd_results}
@@ -315,7 +315,7 @@ Table (\ref{tab:late_fusion_results}) shows different evaluated configurations a
 \section{Conclusions}
 
 Different hybrid approaches were evaluated in this task. The late-fusion approach outperformed other approaches using RMSE as the evaluation criterion. This approach aggregated five different ones using a KNN regression model with $ 530 $ neighbors.
-All performed evaluations including the best performer did not outperform the proposed baseline for this task. As the task is use the best performer hybrid recommendation system which could be of a single system, we chose to submit the baseline which is the output of SVD recommendation system using $ 50 $ latent factors. The results of this approach were post processed to keep the ratings within the accepted range.
+All performed evaluations including the best performer did not outperform the proposed baseline for this task. As the task is to use the best performer hybrid recommendation system which could be of a single system, we chose to submit the baseline which is the output of SVD recommendation system using $ 50 $ latent factors. The results of this approach were post processed to keep the ratings within the accepted range.
 
 
 % The following two commands are all you need in the
