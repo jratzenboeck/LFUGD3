@@ -46,7 +46,7 @@
 
 \section{Description of Task \taskno}
 
-In this task, we should predict a set of movie ratings for 200.000 (user, movie) tuples. To fulfil the task, four different datasets are provided. The first one contains 800.000 (user, movie, rating) triples which represent previous movie ratings. The second contains more details about the movies namely, title, release year and genres. The third contains some information about the users who rated the movies namely, gender, age range, job and zip-code. Information provided by these three files combined with extended information crawled from multiple on-line movie sources should be used in experimenting and evaluating different hybrid recommendation systems. The fourth file contains a set of (user, movie) tuples which should finally be enriched by predicted user ratings for the movies using the best evaluated recommendation system.
+In this task, we should predict a set of movie ratings for 200.000 (user, movie) tuples. To fulfill the task, four different datasets are provided. The first one contains 800.000 (user, movie, rating) triples which represent previous movie ratings. The second one contains more details about the movies namely, title, release year and genres. The third one contains some information about the users who rated the movies namely, gender, age range, job and zip-code. The data provided by these three files combined with extended information crawled from multiple on-line movie sources should be used in experimenting and evaluating different hybrid recommendation systems. The fourth file contains a set of (user, movie) tuples which should finally be enriched by predicted user ratings for the movies using the best evaluated recommendation system.
 
 The remainder of this paper is organized as follows. In section 2 we provide an overview and a short analysis on the provided datasets. Section 3 explains how we addressed this task. It also proposes our parallelized and monolithic approaches to predict the missing ratings. Section 4 presents how we tested our approaches using different configurations and also the setups conducted for these configurations. Section 5 shows the results for different setups, and the last section wraps up the task by concluding it.
 
@@ -76,7 +76,7 @@ The third file provided contains 6040 (id, gender, age, job, zip-code) quintuple
 
 \section{Proposed Method}
 
-For this task, we worked on two sets of approaches: Early-fusion (parallelized design) and Late-fusion (monolithic design). For the early-fusion approach, we boosted item-based collaborative filtering using content-based movies similarity, and user-based collaborative filtering using content-based users similarity. [???] Finally, we boosted matrix factorization approach using ??????????.
+For this task, we worked on two sets of approaches: Early-fusion (parallelized design) and Late-fusion (monolithic design). For the early-fusion approach, we boosted item-based collaborative filtering using content-based movies similarity, and user-based collaborative filtering using content-based users similarity.  Finally, we boosted matrix factorization approach by trying two different approaches, namely SVD++ and gSVD++.
 For the late fusion approach, we combined the results of multiple recommendation systems using a regression model.
 
 \subsection{Early-Fusion Approach}
@@ -110,7 +110,7 @@ The crawled movie attributes were divided into seven categories as follows:
 	\item Description: contains all text descriptions crawled from the different sources
 	\item Other: contains any other important features (awards, …)
 \end{itemize}
-For each category, a specific similarity measure is used. Then, the similarity between two movies is calculated as a weighted sum of the similarities between their categorized attributes. The measures for each attribute category were discussed in more details in task 2.
+For each category, a specific similarity measure is used. Then, the similarity between two movies is calculated as a weighted sum of the similarities between their categorized attributes. The measures for each attribute category were discussed in more detail in task 2.
 
 \begin{figure}
 	\centering
@@ -140,18 +140,19 @@ The weights for combining individual similarities into the final content-based s
 
 \subsubsection{Matrix Factorization}
 
-%This approach tries to find out hidden parameters for the user ratings and therefore measure the interest of a user in an item in multiple dimensions. The implementation does a matrix factorization by computing the Singular Value Decomposition (SVD) and learns the matrix factorization model with a Gradient Descent approach.
-
-To improve your existing matrix factorization approach we used two adaptions of the matrix factorization based on the he Singular Value Decomposition (SVD).
+This approach tries to find out hidden parameters for the user ratings and therefore measure the interest of a user in an item in multiple dimensions. The implementation does a matrix factorization by computing the Singular Value Decomposition (SVD) and learns the matrix factorization model with a Gradient Descent approach. The approach was already used and discussed in task 1. 
+\newline
+\newline
+To improve your existing matrix factorization approach we used two adaptions of matrix factorization based on the he Singular Value Decomposition (SVD).
 \newline
 \newline
 \textbf{\emph{Singular Value Decomposition++ (SVD++) }}
 \newline
 
-This approach is an extension to SVD-based latent factor models. It improves the accuracy by using explicit feedback and the implicit feedback from users. Through this the preferences of a user are represented by a combination of the explicit and implicit information.
+This approach is an extension to SVD-based latent factor models. It improves the accuracy by using explicit- and implicit feedback from users. Through this the preferences of a user are represented by a combination of the explicit and implicit information.
 \newline
-In this case the explicit feedback of a user is based on the movie ratings he made and the implicit feedback is based on the movies a user rated, without consideration of the rating.
-The following equation shows the SVD++ model:
+In this case the explicit feedback of a user is based on the movie ratings he/she made and the implicit feedback is based on the movies a user rated, without consideration of the rating.
+Following equation shows the SVD++ model:
 
 \begin{equation}
 sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
@@ -159,7 +160,7 @@ sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
 \newline
 Where:
 
-$ p_{u} $ represents the user with the implicit feedback
+$ p_{u} $ represents the user with implicit feedback
 
 $ r_{ui} $ represents the rating
 
@@ -169,16 +170,16 @@ $ n_{u} $ contains all items for that a user provided an implicit preference
 
 $ y_{i} $ represents the implicit feedback
 
-$ b_{ui} $ represents the bias of a user item tupel
+$ b_{ui} $ represents the bias of a user item tuple
 \newline
 \newline
 \textbf{\emph{gSingular Value Decomposition++ (gSVD++) }}
 \newline
 
-This approach exploits implicit and explicit feedback from users and the information of the available metadata associated to the items. This way it enriches the SVD++ about the information associated to the items, like genres, actors and keywords.
+This approach exploits implicit and explicit feedback from users and the information of available metadata associated to the items. This way it enriches the SVD++ about information associated to the items, like genres, actors and keywords.
 \newline
-Therefore, the model of the SVD++ is enhanced with the implicit feedback for the item factors.
-The following equation shows the adaption by the gSVD++ :
+Therefore, the model of SVD++ is enhanced with the implicit feedback for the item factors.
+Following equation shows the adaption by gSVD++ :
 
 \begin{equation}
 sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
@@ -226,6 +227,7 @@ The five recommendation systems which were aggregated are:
 
 As the final predictions of the task are evaluated using Root Mean Square Error (RMSE), we used this measure to evaluate our models. To make sure that the evaluation is not biased, we used 10-fold cross validation on the provided ''training.dat'' file as the true ratings are provided. Using cross-validation will ensure that no triples (user, item, rating) are used in both training (building) and evaluating the model.
 
+\subsection{Content-based Similarities}
 Tuning all the weights automatically for content-based similarity measures (for movies and users) is not feasible as each single evaluation takes from (10-40) hours. We set these weights manually using a simple voting approach. Multiple persons were asked to rank their preferences and the average rankings were used to compute the weights (more details are available in task 2). Tables (\ref{tab:movie_weights}, \ref{tab:user_weights}) show the weights for each set of attributes for movies and users respectively.
 
 \begin{table}[]
@@ -261,9 +263,28 @@ Other             & 2               \\ \hline
 	\label{tab:user_weights}
 \end{table}
 
-As input for the parallelized hybridization the predictions from the different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks.    Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbour regression model to predict optimal target weights for the final weighted hybrid run. To build the regression model the output from the individual approaches as well as the actual rating were split into a training and a test set and then fitted into the kNearestNeighbor regressor model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between the result and the actual rating. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, were chosen for the final predictions.
-
-// TODO: Mention different outcomes of the regression model
+\subsection{k-Nearest-Neighbors Regression}
+As input for the parallelized hybridization, the predictions from different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks. Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbor regression model to predict optimal target weights for the final weighted hybrid run. To build a regression model the output from different individual approaches as well as the actual rating were split into a training and test set and then fitted into the k-Nearest-Neighbor regression model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between result and actual rating. We tuned the "number of neighbors" parameter to get the best RMSE. Table \ref{tab:regrRMSE} shows a part of the tried ranges. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, were chosen for the final predictions.
+\begin{table}
+\centering	
+	\begin{tabular}{|c|c|}
+	\hline
+	\textbf{Number of neighbors} & \textbf{RMSE} \\ \hline
+	\textbf{nn = 1}  & 1.2571         \\ \hline
+	\textbf{nn = 5} & 0.9747         \\ \hline
+	\textbf{nn = 10} & 0.9334         \\ \hline
+	\textbf{nn = 20} & 0.9121         \\ \hline
+	\textbf{nn = 40} & 0.9015         \\ \hline
+	\textbf{nn = 80} & 0.8961         \\ \hline
+	\textbf{nn = 160} & 0.8934         \\ \hline
+	\textbf{nn = 320} & 0.8923         \\ \hline
+	\textbf{nn = 430} & \textbf{0.8921}         \\ \hline
+	\textbf{nn = 750} & 0.8921         \\ \hline
+	\textbf{nn = 1280} & 0.8922         \\ \hline
+	\end{tabular}
+	\caption{RMSE results for the regression model}
+	\label{tab:regrRMSE}
+\end{table}
 
 // TODO: Think about whether we need this detailed description below again in this task (I don't think it is necessary)
 As there is no clear documented way for selecting the number of topics (latent factors) for LSI and LDA, this parameter should be tuned automatically. Unfortunately, this was not feasible for this task due to the lack of resources. Professor Wray Buntine, Monsh University, wrote as an answer to online question\footnote{\url{https://www.quora.com/Latent-Dirichlet-Allocation-LDA-What-is-\\the-best-way-to-determine-k-number-of-topics-in-topic-modeling}} about how to set this parameter: ''With 20,000 documents using a good implementation of HDP-LDA with a Gibbs sampler I can sometimes get  K≈2000'', ''Now inspecting the 2000 topics, maybe 1600 have good quality comprehensibility''. As we have 3883 virtual documents and these virtual documents are relatively short (compared to web-page discussing a topic), we set this parameter to (150).
@@ -365,7 +386,7 @@ Table (\ref{tab:eval_02}) shows the results of the second evaluation set. In thi
 Table shows the evaluation results for the SVD++ for different factors. We can see that the best performance was with the use of ??? factors.
 \newline
 \newline
-For the gSVD++ approach we was not able to compute any reasonable results. The reason for this was that, if our lists with the movies and its associated attributes has reached a certain size the script stopped with an out of memory exception.
+For the gSVD++ approach we were not able to compute any reasonable results. The reason for this was that, if our lists with the movies and its associated attributes has reached a certain size the script stopped with an out of memory exception.
 
 
 \section{Conclusions}
