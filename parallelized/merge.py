@@ -41,7 +41,7 @@ def read_data(recommenders_output_directory, actual_values_directory=None):
             data[key][method] = data[key][method]['sum'] / data[key][method]['count']
 
     # Reading actual values
-    if actual_values_directory is None:
+    if actual_values_directory is not None:
         files = glob('%s/*.test' % actual_values_directory)
         for file_path in files:
             with open(file_path, newline='') as file:
@@ -72,7 +72,7 @@ def write_data(data, output_file_path):
 def merge_training_files():
     rec_output_dir = 'data/rec_output/train'
     rec_test_dir = 'data/rec_test'
-    reg_input_path = 'data/reg_input/reg.train'
+    reg_input_path = 'data/reg_input/reg.train.dat'
     data = read_data(recommenders_output_directory=rec_output_dir,
                      actual_values_directory=rec_test_dir)
     write_data(data=data,
@@ -81,15 +81,14 @@ def merge_training_files():
 
 def merge_prediction_files():
     rec_output_dir = 'data/rec_output/predict'
-    rec_test_dir = 'data/rec_test'
-    reg_input_path = 'data/reg_input/reg.predict'
+    reg_input_path = 'data/reg_input/reg.predict.dat'
     data = read_data(recommenders_output_directory=rec_output_dir,
-                     actual_values_directory=rec_test_dir)
+                     actual_values_directory=None)
     write_data(data=data,
                output_file_path=reg_input_path)
 
 
 if __name__ == '__main__':
-    # merge_training_files()
+    merge_training_files()
     merge_prediction_files()
 

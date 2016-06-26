@@ -54,30 +54,16 @@ The remainder of this paper is organized as follows. In section 2 we provide an 
 
 Data analysis was performed mainly in tasks 1 and 2. The first file of this task contains 800167 (user\_id, movie\_id, rating) tuples used for training with the highest rating density at a four. The second file of this task contains 200042 (user\_id, movie\_id) tuples used for predicting the final ratings with 25 new movie\_ids which don't exist in the training set.
 
-The second file contains 3883 (id, title, genres) triples which equal the number of total movies to be rated by the users. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). Figure (\ref{fig:sources}) shows the percentage of movies that we were able to enrich from each of these sources with (94\%, 92\%, 82\%) from (OMDB, TMDB, DBPedia) respectively.
+The second file contains 3883 (id, title, genres) triples which equal the number of total movies to be rated by the users. Three different on-line movie sources were crawled to gather additional information about the movies (OMDB, TMDB, DBPedia). We were able to enrich (94\%, 92\%, 82\%) of the movies with external information from (OMDB, TMDB, DBPedia) respectively.
 
 OMDB was used as the main information source, where TMDB and DBPedia were used to enrich this source either by filling in the missing values or by extending the basic information. This process led to 95 features for each movie, which were analyzed and processed to end up with 17 important features that have relatively high densities.
 
-The third file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure \ref{fig:density} shows histograms for this set. The users tend to be males (71\%) and in the age range of [25, 34] (34\%). Figure \ref{fig:agerangegender} illustrates this fact.
-
-\begin{figure}
-\centering
-% \includegraphics[width=\columnwidth]{images/sources.png}
-\caption{Percentage of returned movie information}
-\label{fig:sources}
-\end{figure}
-
-\begin{figure}
-\centering
-% \includegraphics[width=\columnwidth]{images/density.png}
-\caption{Histograms for users set}
-\label{fig:density}
-\end{figure}
+The third file provided contains 6040 (id, gender, age, job, zip-code) quintuples which also fits the number of users who occur in the user-movie datasets for the ratings. The user information provided was complete and sound (no missing or unknown values). Figure \ref{fig:agerangegender} shows that users tend to be males (71\%) and in the age range of [25, 34] (34\%).
 
 \begin{figure}
 \centering
 \includegraphics[width=\columnwidth]{images/agerange_gender.png}
-\caption{User analysis regarding age and gender}
+\caption{"Male" and "25" have higher densities in users data}
 \label{fig:agerangegender}
 \end{figure}
 
@@ -121,7 +107,7 @@ For each category, a specific similarity measure is used. Then, the similarity b
 
 \begin{figure}
 	\centering
-	% \includegraphics[width=\columnwidth]{images/density.png}
+	\includegraphics[width=\columnwidth]{images/ibcf_approach.png}
 	\caption{Item-based collaborative filtering approach}
 	\label{fig:ibcf_approach}
 \end{figure}
@@ -140,73 +126,27 @@ The weights for combining individual similarities into the final content-based s
 
 \begin{figure}
 	\centering
-	% \includegraphics[width=\columnwidth]{images/density.png}
+	\includegraphics[width=\columnwidth]{images/ubcf_approach.png}
 	\caption{User-based collaborative filtering approach}
 	\label{fig:ubcf_approach}
 \end{figure}
 
 \subsubsection{Matrix Factorization}
 
-This approach tries to find out hidden parameters for the user ratings and therefore measure the interest of a user in an item in multiple dimensions. The implementation does a matrix factorization by computing the Singular Value Decomposition (SVD) and learns the matrix factorization model with a Gradient Descent approach. The approach was already used and discussed in task 1. 
-\newline
-\newline
-To improve your existing matrix factorization approach we used two adaptions of matrix factorization based on the he Singular Value Decomposition (SVD).
-\newline
-\newline
+This approach estimates hidden (meta) parameters from user ratings to try describing them in a higher dimensional space (compared to the original dimensions of user and item). These parameters are called latent factors and they are not necessarily interpretable. This approach maps the two dimensions into the new latent ones and try to minimize the reconstruction error using multiple approaches like Singular Value Decomposition (SVD) or Gradient Descent.
+
+We tried to evaluate two extensions of matrix factorization.
+
 \textbf{\emph{Singular Value Decomposition++ (SVD++) }}
 \newline
 
-This approach is an extension to SVD-based latent factor models. It improves the accuracy by using explicit- and implicit feedback from users. Through this the preferences of a user are represented by a combination of the explicit and implicit information.
-\newline
-In this case the explicit feedback of a user is based on the movie ratings he/she made and the implicit feedback is based on the movies a user rated, without consideration of the rating.
-Following equation shows the SVD++ model:
+This approach improves the accuracy of SVD using explicit and implicit feedback from users. The preferences of a user are represented using a combination of these explicit and implicit feedbacks.
 
-\begin{equation}
-sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
-\end{equation}
-\newline
-Where:
+In out case, the explicit feedback of a user is based on the movie ratings he/she made and the implicit feedback is based on the movies a user rated, without consideration of the rating values.
 
-$ p_{u} $ represents the user with implicit feedback
-
-$ r_{ui} $ represents the rating
-
-$ p_{u} $ represents the user factor
-
-$ n_{u} $ contains all items for that a user provided an implicit preference
-
-$ y_{i} $ represents the implicit feedback
-
-$ b_{ui} $ represents the bias of a user item tuple
-\newline
-\newline
 \textbf{\emph{gSingular Value Decomposition++ (gSVD++) }}
-\newline
 
-This approach exploits implicit and explicit feedback from users and the information of available metadata associated to the items. This way it enriches the SVD++ about information associated to the items, like genres, actors and keywords.
-\newline
-Therefore, the model of SVD++ is enhanced with the implicit feedback for the item factors.
-Following equation shows the adaption by gSVD++ :
-
-\begin{equation}
-sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
-\end{equation}
-\newline
-Where:
-
-$ G_{i} $ represents the related categories of a movie
-
-$ x_{q} $ represents the metadata of a movie
-\newline
-\newline
-To include the different movie attributes of the crawled movie metadata it  is divided into five categories to represent the metadata as follows:
-\begin{itemize}
-	\item Year: represents the release year of the movie
-	\item Genres: contains genres of the movie
-	\item Stakeholders: contains actors and writers
-	\item Description: contains tags for describing a movie
-	\item All: merged representation of the categories year, genres, stakeholders, description
-\end{itemize}
+This approach enriches implicit and explicit feedbacks from SVD++ using meta-information about the items. This information could be aggregated from external sources as introduced earlier (genres, actors, ...).
 
 \subsection{Late-Fusion Approach}
 
@@ -225,7 +165,7 @@ The five recommendation systems which were aggregated are:
 
 \begin{figure}
 	\centering
-	% \includegraphics[width=\columnwidth]{images/density.png}
+	\includegraphics[width=\columnwidth]{images/late_fusion_approach.png}
 	\caption{Late-fusion approach}
 	\label{fig:late_fusion_approach}
 \end{figure}
@@ -234,8 +174,10 @@ The five recommendation systems which were aggregated are:
 
 As the final predictions of the task are evaluated using Root Mean Square Error (RMSE), we used this measure to evaluate our models. To make sure that the evaluation is not biased, we used 10-fold cross validation on the provided ''training.dat'' file as the true ratings are provided. Using cross-validation will ensure that no triples (user, item, rating) are used in both training (building) and evaluating the model.
 
+To compare results of the different evaluated approaches, we introduced a simple mean-user-ratings approach as a baseline. This approach simply predicts the missing rating of a user for an item by averaging all his previous ratings.
+
 \subsection{Content-based Similarities}
-Tuning all the weights automatically for content-based similarity measures (for movies and users) is not feasible as each single evaluation takes from (10-40) hours. We set these weights manually using a simple voting approach. Multiple persons were asked to rank their preferences and the average rankings were used to compute the weights (more details are available in task 2). Tables (\ref{tab:movie_weights}, \ref{tab:user_weights}) show the weights for each set of attributes for movies and users respectively.
+Tuning all the weights automatically for content-based similarity measures (for movies and users) is not feasible as each single evaluation takes from (10-60) hours. We set these weights manually using a simple voting approach. Multiple persons were asked to rank their preferences and the average rankings were used to compute the weights (more details are available in task 2). Tables (\ref{tab:movie_weights}, \ref{tab:user_weights}) show the weights for each set of attributes for movies and users respectively.
 
 \begin{table}[]
 \centering
@@ -293,38 +235,18 @@ As input for the parallelized hybridization, the predictions from different indi
 	\label{tab:regrRMSE}
 \end{table}
 
-// TODO: Think about whether we need this detailed description below again in this task (I don't think it is necessary)
-As there is no clear documented way for selecting the number of topics (latent factors) for LSI and LDA, this parameter should be tuned automatically. Unfortunately, this was not feasible for this task due to the lack of resources. Professor Wray Buntine, Monsh University, wrote as an answer to online question\footnote{\url{https://www.quora.com/Latent-Dirichlet-Allocation-LDA-What-is-\\the-best-way-to-determine-k-number-of-topics-in-topic-modeling}} about how to set this parameter: ''With 20,000 documents using a good implementation of HDP-LDA with a Gibbs sampler I can sometimes get  K≈2000'', ''Now inspecting the 2000 topics, maybe 1600 have good quality comprehensibility''. As we have 3883 virtual documents and these virtual documents are relatively short (compared to web-page discussing a topic), we set this parameter to (150).
-
-Fixing these parameters, we first evaluated our approach using only the attributes-based similarity between movies $ \alpha=1.0 $. The following configurations were used:
+\subsection{SVD++ \& gSVD++}
+For SVD++, we used the parameters from \cite{Koren:2009} which were used for a similar task with the Netflix dataset, assuming that Netflix's dataset is similar to the one we are provided with. Using these parameters, we evaluated different number of latent factors.
 \begin{itemize}
-\item \textbf{TF-IDF} with $ k = {1, 10, 15, 20, 30, 40} $
-\item \textbf{LSI} with $ k = {1, 10, 15, 20, 30, 40} $
-\item \textbf{LDA} with $ k = {1, 10, 15, 20, 30, 40} $
+\item Regularization = 0.015
+\item Bias regularization = 0.33
+\item Learn rate = 0.001
+\item Bias learn rate = 0.7
+\item Learn rate decay = 1
 \end{itemize}
 
-After determining the best model for corpus-based similarity (LSI) with the best $ k $ value ($ k = 15 $), we checked the results of the first task to determine which $ k $ performed the best. We compared results of each $ k $ (ratings-based and attribute-based) and fixed one value in between $ k=10 $. Fixing $ k $, we then evaluated our approach again using both similarities (ratings-based and attribute-based). The following configurations were used:
-\begin{itemize}
-\item $ \alpha = {0.2, 0.4, 0.6, 0.8} $
-\end{itemize}
-
-To compare the results of these different configurations, we introduced a simple mean-user-ratings approach as a baseline. This approach simply predicts the missing rating of a user for an item by averaging all his previous ratings.
-\newline
-\newline
-To compute the results for the SVD++ we used the parameters Yehuda Koren used for the Netflix dataset. Assuming that the given dataset about movies and the Netflix dataset are pretty similar.
-\begin{itemize}
-\item regularization = 0.015
-\item bias regularization = 0.33
-\item learn rate = 0.001
-\item bias learn rate = 0.7
-\item learn rate decay = 1
-\end{itemize}
-To evaluate the best number of factors we try different configurations.
-\newline
-\newline
-The configuration of the gSVD++ approach was based on the SVD++. Therefore, we configured it with the same parameters and used the number of factors which the best result for the SVD++.
-\newline
-To include the meta information about the items we created lists that contain a movie, attribute mapping, based on the defined categories for the the gSVD++.
+gSVD++ is based on SVD++. Therefore, we configured it using the same parameters mentioned above. We also used the number of factors which gave the best results for SVD++. Meta-information about the movies was provided to gSVD++ algorithm using created lists which maps our crawled movie attributes to the defined categories of attributes for gSVD++.
+\emph{We were not able to get results for this approach, due to lack of resources (memory resources). When our created lists for the movies and their associated crawled attributes reached a certain size, the script stopped with an out of memory exception.}
 
 \section{Results}
 
@@ -366,7 +288,7 @@ Table (\ref{tab:eval_01}) and Figure (\ref{fig:eval_01}) show the results of the
 
 \begin{figure}
 \centering
-\includegraphics[width=\columnwidth]{images/evaluations.png}
+%\includegraphics[width=\columnwidth]{images/evaluations.png}
 \caption{First Evaluation Set - $ \alpha = 1.0 $}
 \label{fig:eval_01}
 \end{figure}
@@ -391,9 +313,6 @@ Table (\ref{tab:eval_02}) shows the results of the second evaluation set. In thi
 \end{table}
 
 Table shows the evaluation results for the SVD++ for different factors. We can see that the best performance was with the use of ??? factors.
-\newline
-\newline
-For the gSVD++ approach we were not able to compute any reasonable results. The reason for this was that, if our lists with the movies and its associated attributes has reached a certain size the script stopped with an out of memory exception.
 
 
 \section{Conclusions}
