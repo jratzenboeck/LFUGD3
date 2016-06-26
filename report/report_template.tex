@@ -218,7 +218,7 @@ The predictions from different individual approaches were used as input for the 
 The training set was randomly split $ 4 $ times into two subsets one to train the recommendation systems (70\%) and the other one (30\%) was used as input for each of those systems and the results combined with the actual (known) rating were used to train and evaluate the regression model.
 The $ 4 $ sets that were used to build KNN model were combined again before building it. We used cross-validation with $ 10 $ folds to evaluate this model.
 
-We tuned the "number of neighbors" ($ k $) parameter to get the best RMSE. Table \ref{tab:late_fusion_results} in section \ref{sec:results} shows different evaluated configurations along with their RMSE value.
+We tuned the "number of neighbors" ($ k $) parameter to get the best RMSE. 
 
 \subsection{SVD++ \& gSVD++}
 For SVD++, we used the parameters from \cite{Koren:2009} which were used for a similar task with the Netflix dataset, assuming that Netflix's dataset is similar to the one we are provided with. Using these parameters, we evaluated different number of latent factors.
@@ -277,6 +277,7 @@ Due to the high amount of needed processing capacity we were not able to compute
 \end{table}
 
 \subsection{Late-Fusion Approach}
+Table \ref{tab:late_fusion_results} shows different evaluated configurations along with their RMSE value for the k-Nearest-Neighbors regression model. The best result shows an RMSE value of 0.8921 which outperforms the results from the early-fusion approach.
 \begin{table}
 	\centering	
 	\begin{tabular}{|c|c|}
@@ -301,7 +302,8 @@ Due to the high amount of needed processing capacity we were not able to compute
 
 \section{Conclusions}
 
-TF-IDF, LSI and LDA were so close in their performance having LSI as the best performer in combination with $ k = 10 $. The evaluated text models didn't affect the final results much as there are other attributes affecting the similarity between two movies. Tuning all parameters for these attributes needs much more resources than we have. Although the results were close, we preferred to go with best performer to predict the final missing ratings in the file ''predict.dat''
+The late-fusion approach yielded the best RMSE value after training our regression model with a 530 neighbors and predicting the missing ratings.  
+Evaluating several hybrid recommenders which were discussed in the lecture required a lot of resources and therefore we had to limit ourselves to a few approaches which seemed to be most promising.
 
 
 % The following two commands are all you need in the
