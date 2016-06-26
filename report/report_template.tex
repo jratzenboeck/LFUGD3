@@ -140,7 +140,65 @@ The weights for combining individual similarities into the final content-based s
 
 \subsubsection{Matrix Factorization}
 
-This approach tries to find out hidden parameters for the user ratings and therefore measure the interest of a user in an item in multiple dimensions. The implementation does a matrix factorization by computing the Singular Value Decomposition (SVD) and learns the matrix factorization model with a Gradient Descent approach. 
+%This approach tries to find out hidden parameters for the user ratings and therefore measure the interest of a user in an item in multiple dimensions. The implementation does a matrix factorization by computing the Singular Value Decomposition (SVD) and learns the matrix factorization model with a Gradient Descent approach.
+
+To improve your existing matrix factorization approach we used two adaptions of the matrix factorization based on the he Singular Value Decomposition (SVD).
+\newline
+\newline
+\textbf{\emph{Singular Value Decomposition++ (SVD++) }}
+\newline
+
+This approach is an extension to SVD-based latent factor models. It improves the accuracy by using explicit feedback and the implicit feedback from users. Through this the preferences of a user are represented by a combination of the explicit and implicit information.
+\newline
+In this case the explicit feedback of a user is based on the movie ratings he made and the implicit feedback is based on the movies a user rated, without consideration of the rating.
+The following equation shows the SVD++ model:
+
+\begin{equation}
+sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
+\end{equation}
+\newline
+Where:
+
+$ p_{u} $ represents the user with the implicit feedback
+
+$ r_{ui} $ represents the rating
+
+$ p_{u} $ represents the user factor
+
+$ n_{u} $ contains all items for that a user provided an implicit preference
+
+$ y_{i} $ represents the implicit feedback
+
+$ b_{ui} $ represents the bias of a user item tupel
+\newline
+\newline
+\textbf{\emph{gSingular Value Decomposition++ (gSVD++) }}
+\newline
+
+This approach exploits implicit and explicit feedback from users and the information of the available metadata associated to the items. This way it enriches the SVD++ about the information associated to the items, like genres, actors and keywords.
+\newline
+Therefore, the model of the SVD++ is enhanced with the implicit feedback for the item factors.
+The following equation shows the adaption by the gSVD++ :
+
+\begin{equation}
+sim(x, y) = (1 - \alpha) \times sim_{r}(x, y) + (\alpha) \times sim_{a}(x, y)
+\end{equation}
+\newline
+Where:
+
+$ G_{i} $ represents the related categories of a movie
+
+$ x_{q} $ represents the metadata of a movie
+\newline
+\newline
+To include the different movie attributes of the crawled movie metadata it  is divided into five categories to represent the metadata as follows:
+\begin{itemize}
+	\item Year: represents the release year of the movie
+	\item Genres: contains genres of the movie
+	\item Stakeholders: contains actors and writers
+	\item Description: contains tags for describing a movie
+	\item All: merged representation of the categories year, genres, stakeholders, description
+\end{itemize}
 
 \subsection{Late-Fusion Approach}
 
@@ -183,7 +241,7 @@ Production Companies             & 3               \\ \hline
 Directors             & 4               \\ \hline
 Writers             & 4               \\ \hline
 Description             & 6               \\ \hline
-Other             & 2               \\ \hline  
+Other             & 2               \\ \hline
 \end{tabular}
 \caption{Weights of movie features}
 \label{tab:movie_weights}
@@ -203,7 +261,7 @@ Other             & 2               \\ \hline
 	\label{tab:user_weights}
 \end{table}
 
-As input for the parallelized hybridization the predictions from the different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks.    Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbour regression model to predict optimal target weights for the final weighted hybrid run. To build the regression model the output from the individual approaches as well as the actual rating were split into a training and a test set and then fitted into the kNearestNeighbor regressor model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between the result and the actual rating. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, were chosen for the final predictions. 
+As input for the parallelized hybridization the predictions from the different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks.    Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbour regression model to predict optimal target weights for the final weighted hybrid run. To build the regression model the output from the individual approaches as well as the actual rating were split into a training and a test set and then fitted into the kNearestNeighbor regressor model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between the result and the actual rating. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, were chosen for the final predictions.
 
 // TODO: Mention different outcomes of the regression model
 
@@ -223,6 +281,22 @@ After determining the best model for corpus-based similarity (LSI) with the best
 \end{itemize}
 
 To compare the results of these different configurations, we introduced a simple mean-user-ratings approach as a baseline. This approach simply predicts the missing rating of a user for an item by averaging all his previous ratings.
+\newline
+\newline
+To compute the results for the SVD++ we used the parameters Yehuda Koren used for the Netflix dataset. Assuming that the given dataset about movies and the Netflix dataset are pretty similar.
+\begin{itemize}
+\item regularization = 0.015
+\item bias regularization = 0.33
+\item learn rate = 0.001
+\item bias learn rate = 0.7
+\item learn rate decay = 1
+\end{itemize}
+To evaluate the best number of factors we try different configurations.
+\newline
+\newline
+The configuration of the gSVD++ approach was based on the SVD++. Therefore, we configured it with the same parameters and used the number of factors which the best result for the SVD++.
+\newline
+To include the meta information about the items we created lists that contain a movie, attribute mapping, based on the defined categories for the the gSVD++.
 
 \section{Results}
 
@@ -287,6 +361,12 @@ Table (\ref{tab:eval_02}) shows the results of the second evaluation set. In thi
 \caption{Second Evaluation Set - $ k = 10 $}
 \label{tab:eval_02}
 \end{table}
+
+Table shows the evaluation results for the SVD++ for different factors. We can see that the best performance was with the use of ??? factors.
+\newline
+\newline
+For the gSVD++ approach we was not able to compute any reasonable results. The reason for this was that, if our lists with the movies and its associated attributes has reached a certain size the script stopped with an out of memory exception.
+
 
 \section{Conclusions}
 
