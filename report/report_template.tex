@@ -213,27 +213,7 @@ Other             & 2               \\ \hline
 \end{table}
 
 \subsection{k-Nearest-Neighbors Regression}
-As input for the parallelized hybridization, the predictions from different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks. Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbor regression model to predict optimal target weights for the final weighted hybrid run. To build a regression model the output from different individual approaches as well as the actual rating were split into a training and test set and then fitted into the k-Nearest-Neighbor regression model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between result and actual rating. We tuned the "number of neighbors" parameter to get the best RMSE. Table \ref{tab:regrRMSE} shows a part of the tried ranges. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, were chosen for the final predictions.
-\begin{table}
-\centering	
-	\begin{tabular}{|c|c|}
-	\hline
-	\textbf{Number of neighbors} & \textbf{RMSE} \\ \hline
-	\textbf{nn = 1}  & 1.2571         \\ \hline
-	\textbf{nn = 5} & 0.9747         \\ \hline
-	\textbf{nn = 10} & 0.9334         \\ \hline
-	\textbf{nn = 20} & 0.9121         \\ \hline
-	\textbf{nn = 40} & 0.9015         \\ \hline
-	\textbf{nn = 80} & 0.8961         \\ \hline
-	\textbf{nn = 160} & 0.8934         \\ \hline
-	\textbf{nn = 320} & 0.8923         \\ \hline
-	\textbf{nn = 430} & \textbf{0.8921}         \\ \hline
-	\textbf{nn = 750} & 0.8921         \\ \hline
-	\textbf{nn = 1280} & 0.8922         \\ \hline
-	\end{tabular}
-	\caption{RMSE results for the regression model}
-	\label{tab:regrRMSE}
-\end{table}
+As input for the parallelized hybridization, the predictions from different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks. Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbor regression model to predict optimal target weights for the final weighted hybrid run. To build a regression model the output from different individual approaches as well as the actual rating were split into a training and test set and then fitted into the k-Nearest-Neighbor regression model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between result and actual rating. We tuned the "number of neighbors" parameter to get the best RMSE. Table \ref{tab:regrRMSE} in section \ref{sec:results} shows different evaluated RMSE values. 
 
 \subsection{SVD++ \& gSVD++}
 For SVD++, we used the parameters from \cite{Koren:2009} which were used for a similar task with the Netflix dataset, assuming that Netflix's dataset is similar to the one we are provided with. Using these parameters, we evaluated different number of latent factors.
@@ -249,7 +229,7 @@ gSVD++ is based on SVD++. Therefore, we configured it using the same parameters 
 \emph{We were not able to get results for this approach, due to lack of resources (memory resources). When our created lists for the movies and their associated crawled attributes reached a certain size, the script stopped with an out of memory exception.}
 
 \section{Results}
-
+\label{sec:results}
 Table (\ref{tab:eval_00}) shows the evaluation results from the first task for IBCF using the cosine similarity measure. We can see that the best performance was at $ k = 1 $
 
 \begin{table}[]
@@ -327,6 +307,28 @@ Table (\ref{tab:svd_02}) shows the evaluation results for the SVD++ for differen
 \end{tabular}
 \caption{SVD++ for different factors}
 \label{tab:svd_02}
+\end{table}
+
+\begin{table}
+	\centering	
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Number of neighbors} & \textbf{RMSE} \\ \hline
+		\textbf{nn = 1}  & 1.2571         \\ \hline
+		\textbf{nn = 5} & 0.9749          \\ \hline
+		\textbf{nn = 10} & 0.9333        \\ \hline
+		\textbf{nn = 20} & 0.9121         \\ \hline
+		\textbf{nn = 40} & 0.9015         \\ \hline
+		\textbf{nn = 80} & 0.8961         \\ \hline
+		\textbf{nn = 160} & 0.8935         \\ \hline
+		\textbf{nn = 320} & 0.8923         \\ \hline
+		\textbf{nn = 430} & 0.8922         \\ \hline
+		\textbf{nn = 530} & \textbf{0.8921}			\\ \hline
+		\textbf{nn = 750} & 0.8921         \\ \hline
+		\textbf{nn = 1280} & 0.8923         \\ \hline
+	\end{tabular}
+	\caption{RMSE results for the regression model}
+	\label{tab:regrRMSE}
 \end{table}
 
 \section{Conclusions}
