@@ -1,0 +1,15 @@
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\gSVD++.exe.config
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\obj\Debug\gSVD++.csprojResolveAssemblyReference.cache
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\gSVD++.exe
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\gSVD++.pdb
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\C5.dll
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MathNet.Numerics.dll
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MathNet.Numerics.IO.dll
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MyMediaLite.dll
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MathNet.Numerics.pdb
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MathNet.Numerics.xml
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MathNet.Numerics.IO.pdb
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MathNet.Numerics.IO.xml
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\bin\Debug\MyMediaLite.xml
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\obj\Debug\gSVD++.exe
+J:\SoftwareEntwicklung_Desktop\C#\LFUGD\gSVD++\gSVD++\obj\Debug\gSVD++.pdb
