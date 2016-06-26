@@ -213,27 +213,12 @@ Other             & 2               \\ \hline
 \end{table}
 
 \subsection{k-Nearest-Neighbors Regression}
-As input for the parallelized hybridization, the predictions from different individuals approaches, which were listed earlier, were used. The were run again on the latest training and test data with their optimized setup which yielded the best results in the prior tasks. Due to performance and time reasons the individual computed predictions were stored as model files for later re-usage. Tuning the setup for the late fusion approach relies on a k-Nearest-Neighbor regression model to predict optimal target weights for the final weighted hybrid run. To build a regression model the output from different individual approaches as well as the actual rating were split into a training and test set and then fitted into the k-Nearest-Neighbor regression model. Using cross validation, within each fold the regressor predicts the values for the test set and computes the RMSE between result and actual rating. We tuned the "number of neighbors" parameter to get the best RMSE. Table \ref{tab:regrRMSE} shows a part of the tried ranges. Based on the collected data from the classifier training the values, which yielded the best RMSE as evaluation criteria, were chosen for the final predictions.
-\begin{table}
-\centering	
-	\begin{tabular}{|c|c|}
-	\hline
-	\textbf{Number of neighbors} & \textbf{RMSE} \\ \hline
-	\textbf{nn = 1}  & 1.2571         \\ \hline
-	\textbf{nn = 5} & 0.9747         \\ \hline
-	\textbf{nn = 10} & 0.9334         \\ \hline
-	\textbf{nn = 20} & 0.9121         \\ \hline
-	\textbf{nn = 40} & 0.9015         \\ \hline
-	\textbf{nn = 80} & 0.8961         \\ \hline
-	\textbf{nn = 160} & 0.8934         \\ \hline
-	\textbf{nn = 320} & 0.8923         \\ \hline
-	\textbf{nn = 430} & \textbf{0.8921}         \\ \hline
-	\textbf{nn = 750} & 0.8921         \\ \hline
-	\textbf{nn = 1280} & 0.8922         \\ \hline
-	\end{tabular}
-	\caption{RMSE results for the regression model}
-	\label{tab:regrRMSE}
-\end{table}
+The predictions from different individual approaches were used as input for the parallelized hybridization. These approaches were run again using their optimized setup which yielded the best results in the prior tasks. Due to the lack of time and hardware resources, the individual computed predictions were stored as model files for later re-use. These predictions were combined again using a KNN regression model.
+
+The training set was randomly split $ 4 $ times into two subsets one to train the recommendation systems (70\%) and the other one (30\%) was used as input for each of those systems and the results combined with the actual (known) rating were used to train and evaluate the regression model.
+The $ 4 $ sets that were used to build KNN model were combined again before building it. We used cross-validation with $ 10 $ folds to evaluate this model.
+
+We tuned the "number of neighbors" ($ k $) parameter to get the best RMSE. Table \ref{tab:late_fusion_results} in section \ref{sec:results} shows different evaluated configurations along with their RMSE value.
 
 \subsection{SVD++ \& gSVD++}
 For SVD++, we used the parameters from \cite{Koren:2009} which were used for a similar task with the Netflix dataset, assuming that Netflix's dataset is similar to the one we are provided with. Using these parameters, we evaluated different number of latent factors.
@@ -249,84 +234,69 @@ gSVD++ is based on SVD++. Therefore, we configured it using the same parameters 
 \emph{We were not able to get results for this approach, due to lack of resources (memory resources). When our created lists for the movies and their associated crawled attributes reached a certain size, the script stopped with an out of memory exception.}
 
 \section{Results}
-
-Table (\ref{tab:eval_00}) shows the evaluation results from the first task for IBCF using the cosine similarity measure. We can see that the best performance was at $ k = 1 $
+\label{sec:results}
+\subsection{Early-Fusion Approaches}
+Table (\ref{tab:ibcf_results}) shows the evaluation results from the second task for IBCF aggregating external information about the movies crawled from different on-line sources. The aggregation is based on $ \alpha $ which is the weight for the content-based similarity measure. $ k $ (the number of neighbors) was fixed to $ 10 $ which was the best performer.
 
 \begin{table}[]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-                & \textbf{IBCF} \\ \hline
-\textbf{k = 1}  & 1.037         \\ \hline
-\textbf{k = 10} & 1.115         \\ \hline
-\textbf{k = 15} & 1.123         \\ \hline
-\textbf{k = 20} & 1.129         \\ \hline
-\textbf{k = 30} & 1.134         \\ \hline
-\textbf{k = 40} & 1.135         \\ \hline
-\end{tabular}
-\caption{First Task Results for IBCF}
-\label{tab:eval_00}
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{$ \alpha $} & \textbf{RMSE} \\ \hline
+		\textbf{0.0} & 1.115        \\ \hline
+		\textbf{0.2} & 0.947        \\ \hline
+		\textbf{0.4} & 0.948        \\ \hline
+		\textbf{0.6} & 0.949        \\ \hline
+		\textbf{0.8} & 0.949        \\ \hline
+		\textbf{1.0} & 0.946        \\ \hline
+		\textbf{BASELINE} & 1.036        \\ \hline
+		
+	\end{tabular}
+	\caption{IBCF - $ k = 10 $}
+	\label{tab:ibcf_results}
 \end{table}
 
-Table (\ref{tab:eval_01}) and Figure (\ref{fig:eval_01}) show the results of the first evaluation set along with the baseline. From them, we can see that all the tested text similarity mesures (TF-IDF, LSI, LDA) performed very closely with LSI having the best performance at $ k = 15 $.
+For the UBCF, we were not able to do more than a single run which took about ($ 60h $) on the cloud with a memory resource of ($ 12 GB $). The run was for ($ \alpha = 1 $) which means using only content-based similarity measure, and the result of this run was ($ RMSE = 0.974 $)
+
+Table (\ref{tab:svd_results}) shows the evaluation results for SVD++ using different number of latent factors. We can see that the best performance was with using $ 10 $ factors.
 
 \begin{table}[]
-\centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-                & \textbf{Baseline} & \textbf{TF-IDF} & \textbf{LSI}   & \textbf{LDA} \\ \hline
-\textbf{k = 1}  & 1.036             & 1.224           & 1.222          & 1.221            \\ \hline
-\textbf{k = 10} & 1.036             & 0.948           & 0.946          & 0.947            \\ \hline
-\textbf{k = 15} & 1.036             & 0.952           & \textbf{0.944} & 0.947            \\ \hline
-\textbf{k = 20} & 1.036             & 0.946           & 0.947          & 0.947            \\ \hline
-\textbf{k = 30} & 1.036             & 0.951           & 0.949          & 0.947            \\ \hline
-\textbf{k = 40} & 1.036             & 0.954           & 0.955          & 0.947            \\ \hline
-\end{tabular}
-\caption{First Evaluation Set - $ \alpha = 1.0 $}
-\label{tab:eval_01}
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Number of Factors}                  & \textbf{RMSE} \\ \hline
+		\textbf{10} & 0,8960        \\ \hline
+		\textbf{50} & ---        \\ \hline
+		\textbf{100} & ---        \\ \hline
+		\textbf{200} & ---        \\ \hline
+		\textbf{BASELINE} & 1.036        \\ \hline
+
+	\end{tabular}
+	\caption{SVD++ results using for different number of latent factors}
+	\label{tab:svd_results}
 \end{table}
 
-\begin{figure}
-\centering
-%\includegraphics[width=\columnwidth]{images/evaluations.png}
-\caption{First Evaluation Set - $ \alpha = 1.0 $}
-\label{fig:eval_01}
-\end{figure}
-
-Table (\ref{tab:eval_02}) shows the results of the second evaluation set. In this set, we fixed $ k = 10 $ and run using only LSI model as it has the best performance in the first evaluation set. $ k = 10 $ is fixed between the best values of $ k $ in IBCF in the first and second task. It is closer to the best $ k $ in the second task as it's performance is relatively better.
-
-\begin{table}[]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-                     & \textbf{LSI} \\ \hline
-\textbf{alpha = 0.0} & 1.115        \\ \hline
-\textbf{alpha = 0.2} & 0.947        \\ \hline
-\textbf{alpha = 0.4} & 0.948        \\ \hline
-\textbf{alpha = 0.6} & 0.949        \\ \hline
-\textbf{alpha = 0.8} & 0.949        \\ \hline
-\textbf{alpha = 1.0} & 0.946        \\ \hline
-
-\end{tabular}
-\caption{Second Evaluation Set - $ k = 10 $}
-\label{tab:eval_02}
-\end{table}
-
-Table (\ref{tab:svd_02}) shows the evaluation results for the SVD++ for different factors. We can see that the best performance was with the use of ??? factors.
-
-\begin{table}[]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-                     & \textbf{SVD++} \\ \hline
-\textbf{number of factors = 10} & 0,8960        \\ \hline
-\textbf{number of factors  = 50} & ---        \\ \hline
-\textbf{number of factors  = 100} & ---        \\ \hline
-\textbf{number of factors  = 200} & ---        \\ \hline
-
-\end{tabular}
-\caption{SVD++ for different factors}
-\label{tab:svd_02}
+\subsection{Late-Fusion Approach}
+\begin{table}
+	\centering	
+	\begin{tabular}{|c|c|}
+		\hline
+		\textbf{Number of neighbors} & \textbf{RMSE} \\ \hline
+		\textbf{1}  & 1.2571         \\ \hline
+		\textbf{5} & 0.9749          \\ \hline
+		\textbf{10} & 0.9333        \\ \hline
+		\textbf{20} & 0.9121         \\ \hline
+		\textbf{40} & 0.9015         \\ \hline
+		\textbf{80} & 0.8961         \\ \hline
+		\textbf{160} & 0.8935         \\ \hline
+		\textbf{320} & 0.8923         \\ \hline
+		\textbf{430} & 0.8922         \\ \hline
+		\textbf{530} & \textbf{0.8921}			\\ \hline
+		\textbf{750} & 0.8921         \\ \hline
+		\textbf{1280} & 0.8923         \\ \hline
+	\end{tabular}
+	\caption{Late-fusion results using KNN}
+	\label{tab:late_fusion_results}
 \end{table}
 
 \section{Conclusions}
