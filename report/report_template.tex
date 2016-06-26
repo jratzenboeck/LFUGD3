@@ -222,7 +222,7 @@ The $ 4 $ sets that were used to build KNN model were combined again before buil
 We tuned the "number of neighbors" ($ k $) parameter to get the best RMSE. 
 
 \subsection{SVD++ \& gSVD++}
-For SVD++, we used the parameters from \cite{Koren:2009} which were used for a similar task with the Netflix dataset, assuming that Netflix's dataset is similar to the one we are provided with. Using these parameters, we evaluated different number of latent factors.
+For SVD++, we used the parameters from \cite{Koren:2008} which were used for a similar task with the Netflix dataset, assuming that Netflix's dataset is similar to the one we are provided with. Using these parameters, we evaluated different number of latent factors.
 \begin{itemize}
 \item Regularization = 0.015
 \item Bias regularization = 0.33
@@ -315,6 +315,7 @@ Table (\ref{tab:late_fusion_results}) shows different evaluated configurations a
 \section{Conclusions}
 
 Different hybrid approaches were evaluated in this task. The late-fusion approach outperformed other approaches using RMSE as the evaluation criterion. This approach aggregated five different ones using a KNN regression model with $ 530 $ neighbors.
+
 All performed evaluations including the best performer did not outperform the proposed baseline for this task. As the task is to use the best performer hybrid recommendation system which could be of a single system, we chose to submit the baseline which is the output of SVD recommendation system using $ 50 $ latent factors. The results of this approach were post processed to keep the ratings within the accepted range.
 
 
